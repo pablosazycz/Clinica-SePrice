@@ -39,9 +39,16 @@ namespace Clinica_SePrice
 
         private void Button3_Click(object sender, EventArgs e)
         {
-            // Abre el formulario de Ver Turnos
-            //FormVerTurnos formVerTurnos = new FormVerTurnos();
-            //formVerTurnos.Show();
+            
+            FormVerTurnos formVerTurnos = new FormVerTurnos(dbContext);
+            formVerTurnos.Show();
+        }
+
+        private void btnVerSalaEspera_Click(object sender, EventArgs e)
+        {
+            // Abre el formulario de Sala de Espera
+            FormSalaEspera formSalaEspera = new FormSalaEspera(dbContext);
+            formSalaEspera.Show();
         }
 
         private void ConectarBaseDatos()

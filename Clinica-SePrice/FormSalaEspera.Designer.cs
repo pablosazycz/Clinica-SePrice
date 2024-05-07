@@ -1,6 +1,6 @@
 ﻿namespace Clinica_SePrice
 {
-    partial class FormVerTurnos
+    partial class FormSalaEspera
     {
         /// <summary>
         /// Required designer variable.
@@ -29,9 +29,7 @@
         private void InitializeComponent()
         {
             dataGridView1 = new DataGridView();
-            txtBuscarTurnos = new TextBox();
-            DniBuscar = new Label();
-            btnSalirTurnos = new Button();
+            LblTitulo = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -40,50 +38,32 @@
             dataGridView1.AllowUserToAddRows = false;
             dataGridView1.AllowUserToDeleteRows = false;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(12, 62);
+            dataGridView1.Location = new Point(12, 66);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
-            dataGridView1.Size = new Size(859, 364);
+            dataGridView1.Size = new Size(776, 382);
             dataGridView1.TabIndex = 0;
             dataGridView1.CellContentClick += dataGridView1_CellClick;
             // 
-            // txtBuscarTurnos
+            // LblTitulo
             // 
-            txtBuscarTurnos.Location = new Point(211, 21);
-            txtBuscarTurnos.Name = "txtBuscarTurnos";
-            txtBuscarTurnos.Size = new Size(407, 23);
-            txtBuscarTurnos.TabIndex = 1;
-            txtBuscarTurnos.TextChanged += txtBuscarTurnos_TextChanged;
+            LblTitulo.AutoSize = true;
+            LblTitulo.Font = new Font("Segoe UI", 16F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            LblTitulo.Location = new Point(235, 9);
+            LblTitulo.Name = "LblTitulo";
+            LblTitulo.Size = new Size(345, 30);
+            LblTitulo.TabIndex = 1;
+            LblTitulo.Text = "LLAMADOR DE SALA DE ESPERA\r\n";
             // 
-            // DniBuscar
-            // 
-            DniBuscar.AutoSize = true;
-            DniBuscar.Location = new Point(12, 24);
-            DniBuscar.Name = "DniBuscar";
-            DniBuscar.Size = new Size(193, 15);
-            DniBuscar.TabIndex = 2;
-            DniBuscar.Text = "Buscar por Nombre, Apellido o DNI";
-            // 
-            // btnSalirTurnos
-            // 
-            btnSalirTurnos.Location = new Point(796, 452);
-            btnSalirTurnos.Name = "btnSalirTurnos";
-            btnSalirTurnos.Size = new Size(75, 23);
-            btnSalirTurnos.TabIndex = 4;
-            btnSalirTurnos.Text = "Salir";
-            btnSalirTurnos.UseVisualStyleBackColor = true;
-            // 
-            // FormVerTurnos
+            // FormSalaEspera
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(883, 487);
-            Controls.Add(btnSalirTurnos);
-            Controls.Add(DniBuscar);
-            Controls.Add(txtBuscarTurnos);
+            ClientSize = new Size(800, 450);
+            Controls.Add(LblTitulo);
             Controls.Add(dataGridView1);
-            Name = "FormVerTurnos";
-            Text = "FormVerTurnos";
+            Name = "FormSalaEspera";
+            Text = "FormSalaEspera";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -92,9 +72,6 @@
         #endregion
 
         private DataGridView dataGridView1;
-        private TextBox txtBuscarTurnos;
-        private Label DniBuscar;
-        private Button button1;
-        private Button btnSalirTurnos;
+        private Label LblTitulo;
     }
 }

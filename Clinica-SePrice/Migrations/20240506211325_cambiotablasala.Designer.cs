@@ -4,6 +4,7 @@ using Clinica_SePrice.Entidades;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinica_SePrice.Migrations
 {
     [DbContext(typeof(ClinicaContext))]
-    partial class ClinicaContextModelSnapshot : ModelSnapshot
+    [Migration("20240506211325_cambiotablasala")]
+    partial class cambiotablasala
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,9 +128,6 @@ namespace Clinica_SePrice.Migrations
 
                     b.Property<int?>("SalaEsperaId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Validado")
-                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
 

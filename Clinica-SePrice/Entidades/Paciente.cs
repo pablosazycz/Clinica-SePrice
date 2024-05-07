@@ -14,5 +14,13 @@ namespace Clinica_SePrice.Entidades
         public string Nombre { get; set; }
         public string Apellido { get; set; }
         public string Dni { get; set; }
+        public bool EnSalaEspera { get; set;}
+
+
+        //public string NroTelefono { get; set; }
+        //public string HistoriaClinica { get; set; }
+        //public string NroAfiliado { get; set; }
+        //public string ObraSocial { get; set; }
     }
+
 }

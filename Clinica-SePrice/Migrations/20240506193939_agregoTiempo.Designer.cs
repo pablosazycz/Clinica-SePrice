@@ -4,6 +4,7 @@ using Clinica_SePrice.Entidades;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinica_SePrice.Migrations
 {
     [DbContext(typeof(ClinicaContext))]
-    partial class ClinicaContextModelSnapshot : ModelSnapshot
+    [Migration("20240506193939_agregoTiempo")]
+    partial class agregoTiempo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,9 +86,6 @@ namespace Clinica_SePrice.Migrations
                     b.Property<DateTime?>("HoraLlamado")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("TurnoId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("SalaEspera", (string)null);
@@ -123,11 +123,8 @@ namespace Clinica_SePrice.Migrations
                     b.Property<int>("PacienteId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SalaEsperaId")
+                    b.Property<int>("SalaEsperaId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Validado")
-                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
 
@@ -157,7 +154,9 @@ namespace Clinica_SePrice.Migrations
 
                     b.HasOne("Clinica_SePrice.Entidades.SalaEspera", "SalaEspera")
                         .WithOne("Turno")
-                        .HasForeignKey("Clinica_SePrice.Entidades.Turno", "SalaEsperaId");
+                        .HasForeignKey("Clinica_SePrice.Entidades.Turno", "SalaEsperaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Medico");
 

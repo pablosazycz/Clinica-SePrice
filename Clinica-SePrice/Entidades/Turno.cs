@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,11 +15,24 @@ namespace Clinica_SePrice.Entidades
         public DateTime Fecha { get; set; }
         public DateTime Hora { get; set; }
         public string Lugar { get; set; }
-        public string? Materiales { get; set; }
-        public string? Observaciones { get; set; }
+        public string Materiales { get; set; }
+        public string Observaciones { get; set; }
         public int Duracion { get; set; }
+        public bool Validado { get; set; }
+        // public string Estado { get; set; }
+
+        // Propiedades de las claves foráneas
+        public int MedicoId { get; set; }
+        public int PacienteId { get; set; }
+        public int? SalaEsperaId { get; set; }
 
         public Medico Medico { get; set; }
         public Paciente Paciente { get; set; }
+
+        [ForeignKey("SalaEsperaId")]
+        public SalaEspera SalaEspera { get; set; }
+
+
+
     }
 }

@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace Clinica_SePrice
 {
-    public partial class FormTurnosMedicos : Form
+    public partial class FormTurnosMedicos : Form   
     {
         private ClinicaContext dbContext;
 
@@ -101,7 +101,8 @@ namespace Clinica_SePrice
                     {
                         Nombre = nombrePaciente,
                         Apellido = apellidoPaciente,
-                        Dni = dniPaciente
+                        Dni = dniPaciente,
+                        EnSalaEspera = false
                     }
                 };
 
@@ -127,7 +128,7 @@ namespace Clinica_SePrice
             dataGridView1.Columns.Add("NombrePacienteColumn", "Nombre Paciente");
             dataGridView1.Columns.Add("ApellidoPacienteColumn", "Apellido Paciente");
             dataGridView1.Columns.Add("DniPacienteColumn", "DNI Paciente");
-
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             foreach (var turno in turnos)
             {
                 dataGridView1.Rows.Add(
@@ -179,6 +180,7 @@ namespace Clinica_SePrice
                     turno.Paciente.Apellido = textBox2.Text;
                     dbContext.SaveChanges();
                     ActualizarDataGridView();
+                    LimpiarControles();
                 }
             }
         }
@@ -224,6 +226,7 @@ namespace Clinica_SePrice
             comboBox2.SelectedIndex = -1;
             dateTimePicker1.Value = DateTime.Today;
         }
+
 
         private DateTime CalcularProximoTurnoDisponible(Medico medicoSeleccionado)
         {
@@ -284,10 +287,6 @@ namespace Clinica_SePrice
         }
 
 
-
-
-
-        // En el evento SelectedIndexChanged del ComboBox de médicos
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (comboBox2.SelectedItem != null)

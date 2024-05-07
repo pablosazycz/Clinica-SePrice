@@ -19,6 +19,7 @@
             button1 = new Button();
             button2 = new Button();
             button3 = new Button();
+            btnVerSalaEspera = new Button();
             SuspendLayout();
             // 
             // lblTitulo
@@ -53,7 +54,7 @@
             // 
             // button3
             // 
-            button3.Location = new Point(344, 111);
+            button3.Location = new Point(346, 101);
             button3.Name = "button3";
             button3.Size = new Size(101, 52);
             button3.TabIndex = 3;
@@ -61,11 +62,22 @@
             button3.UseVisualStyleBackColor = true;
             button3.Click += Button3_Click;
             // 
+            // btnVerSalaEspera
+            // 
+            btnVerSalaEspera.Location = new Point(470, 98);
+            btnVerSalaEspera.Name = "btnVerSalaEspera";
+            btnVerSalaEspera.Size = new Size(101, 52);
+            btnVerSalaEspera.TabIndex = 3;
+            btnVerSalaEspera.Text = "Ver Sala de Espera";
+            btnVerSalaEspera.UseVisualStyleBackColor = true;
+            btnVerSalaEspera.Click += btnVerSalaEspera_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnVerSalaEspera);
             Controls.Add(button3);
             Controls.Add(button2);
             Controls.Add(button1);
@@ -80,5 +92,6 @@
         private Button button1;
         private Button button2;
         private Button button3;
+        private Button btnVerSalaEspera;
     }
 }

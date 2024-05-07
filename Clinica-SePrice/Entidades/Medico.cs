@@ -14,6 +14,9 @@ namespace Clinica_SePrice.Entidades
         public string Nombre { get; set; }
         public string Apellido { get; set; }
         public string Especialidad { get; set; }
+        //public string Matricula { get; set; }
+        //public string NroTelefono { get; set; }
+       
 
         public string NombreCompleto
         {
