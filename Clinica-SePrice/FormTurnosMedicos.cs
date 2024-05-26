@@ -17,23 +17,20 @@ namespace Clinica_SePrice
         {
             this.dbContext = dbContext;
             InitializeComponent();
-            CargarEspecialidades();
+            CargarEspecialidades();           
             ActualizarDataGridView();
         }
-
         private void CargarEspecialidades()
         {
             var especialidades = dbContext.Medicos.Select(m => m.Especialidad).Distinct().ToList();
             comboBox1.DataSource = especialidades;
         }
-
         private void CargarMedicosPorEspecialidad(string especialidad)
         {
             var medicos = dbContext.Medicos.Where(m => m.Especialidad == especialidad).ToList();
             comboBox2.DataSource = medicos;
             comboBox2.DisplayMember = "NombreCompleto";
         }
-
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (comboBox1.SelectedItem != null)
@@ -57,7 +54,14 @@ namespace Clinica_SePrice
             if (fechaSeleccionada.DayOfWeek == DayOfWeek.Saturday || fechaSeleccionada.DayOfWeek == DayOfWeek.Sunday)
             {
                 MessageBox.Show("No se pueden seleccionar turnos los sábados y domingos.", "Día no válido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                dateTimePicker1.Value = DateTime.Today;
+
+                // Ajusta la fecha al próximo lunes
+                while (fechaSeleccionada.DayOfWeek == DayOfWeek.Saturday || fechaSeleccionada.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    fechaSeleccionada = fechaSeleccionada.AddDays(1);
+                }
+
+                dateTimePicker1.Value = fechaSeleccionada;
             }
         }
 
@@ -97,6 +101,7 @@ namespace Clinica_SePrice
                     Lugar = consultorio,
                     Medico = medicoSeleccionado,
                     Duracion = ObtenerDuracionMinimaTurno(medicoSeleccionado.Especialidad),
+                    EstudioMedicoId = null,
                     Paciente = new Paciente
                     {
                         Nombre = nombrePaciente,
@@ -111,188 +116,10 @@ namespace Clinica_SePrice
                 LimpiarControles();
                 ActualizarDataGridView();
             }
-            else { MessageBox.Show("El horario seleccionado no es válido. Por favor, seleccione un horario entre las 8:00 y las 18:00 de lunes a viernes.", "Horario Inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return;}
-
-        }
-
-        private void ActualizarDataGridView()
-        {
-            var turnos = dbContext.Turnos.Include("Medico").Include("Paciente").ToList();
-            dataGridView1.Columns.Clear();
-            dataGridView1.Columns.Add("IdColumn", "ID");
-            dataGridView1.Columns.Add("FechaColumn", "Fecha");
-            dataGridView1.Columns.Add("HoraColumn", "Hora");
-            dataGridView1.Columns.Add("LugarColumn", "Consultorio");
-            dataGridView1.Columns.Add("MedicoColumn", "Médico");
-            dataGridView1.Columns.Add("NombrePacienteColumn", "Nombre Paciente");
-            dataGridView1.Columns.Add("ApellidoPacienteColumn", "Apellido Paciente");
-            dataGridView1.Columns.Add("DniPacienteColumn", "DNI Paciente");
-            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            foreach (var turno in turnos)
-            {
-                dataGridView1.Rows.Add(
-                    turno.Id,
-                    turno.Fecha.ToShortDateString(),
-                    turno.Fecha.ToShortTimeString(),
-                    turno.Lugar,
-                    turno.Medico.NombreCompleto,
-                    turno.Paciente.Nombre,
-                    turno.Paciente.Apellido,
-                    turno.Paciente.Dni
-                );
-            }
-        }
-
-        private int turnoSeleccionadoId;
-        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
-            {
-                DataGridViewRow filaSeleccionada = dataGridView1.Rows[e.RowIndex];
-                int idTurno = Convert.ToInt32(filaSeleccionada.Cells["IdColumn"].Value);
-                turnoSeleccionadoId = idTurno;
-                DateTime fecha = Convert.ToDateTime(filaSeleccionada.Cells["FechaColumn"].Value);
-                DateTime hora = Convert.ToDateTime(filaSeleccionada.Cells["HoraColumn"].Value);
-                string lugar = Convert.ToString(filaSeleccionada.Cells["LugarColumn"].Value);
-                string nombreMedico = Convert.ToString(filaSeleccionada.Cells["MedicoColumn"].Value);
-                string nombrePaciente = Convert.ToString(filaSeleccionada.Cells["NombrePacienteColumn"].Value);
-                string apellidoPaciente = Convert.ToString(filaSeleccionada.Cells["ApellidoPacienteColumn"].Value);
-                string dniPaciente = Convert.ToString(filaSeleccionada.Cells["DniPacienteColumn"].Value);
-                dateTimePicker1.Value = fecha;
-                textBox1.Text = nombrePaciente;
-                textBox2.Text = apellidoPaciente;
-                textBox3.Text = dniPaciente;
-                textBox4.Text = lugar;
-            }
-        }
-
-        private void buttonEditar_Click(object sender, EventArgs e)
-        {
-            if (turnoSeleccionadoId != 0)
-            {
-                var turno = dbContext.Turnos.Find(turnoSeleccionadoId);
-                if (turno != null)
-                {
-                    turno.Fecha = dateTimePicker1.Value;
-                    turno.Lugar = textBox3.Text;
-                    turno.Paciente.Nombre = textBox1.Text;
-                    turno.Paciente.Apellido = textBox2.Text;
-                    dbContext.SaveChanges();
-                    ActualizarDataGridView();
-                    LimpiarControles();
-                }
-            }
-        }
-
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)
-            {
-                DataGridViewRow filaSeleccionada = dataGridView1.Rows[e.RowIndex];
-                turnoSeleccionadoId = Convert.ToInt32(filaSeleccionada.Cells["IdColumn"].Value);
-            }
-        }
-
-        private void buttonBorrar_Click(object sender, EventArgs e)
-        {
-            if (turnoSeleccionadoId != -1)
-            {
-                DialogResult confirmacion = MessageBox.Show("¿Estás seguro de que deseas borrar este turno?", "Confirmación de Borrado", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (confirmacion == DialogResult.Yes)
-                {
-                    var turno = dbContext.Turnos.Find(turnoSeleccionadoId);
-                    if (turno != null)
-                    {
-                        dbContext.Turnos.Remove(turno);
-                        dbContext.SaveChanges();
-                        ActualizarDataGridView();
-                    }
-                    turnoSeleccionadoId = -1;
-                }
-            }
             else
             {
-                MessageBox.Show("Por favor, selecciona un turno para borrar.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void LimpiarControles()
-        {
-            textBox1.Clear();
-            textBox2.Clear();
-            textBox3.Clear();
-            textBox4.Clear();
-            comboBox2.SelectedIndex = -1;
-            dateTimePicker1.Value = DateTime.Today;
-        }
-
-
-        private DateTime CalcularProximoTurnoDisponible(Medico medicoSeleccionado)
-        {
-            if (medicoSeleccionado == null)
-            {
-                throw new ArgumentNullException(nameof(medicoSeleccionado), "El médico seleccionado es nulo.");
-            }
-
-            // averiguo el utlimo turno
-            var ultimoTurno = dbContext.Turnos
-                .Where(t => t.Medico.Id == medicoSeleccionado.Id)
-                .OrderByDescending(t => t.Fecha)
-                .FirstOrDefault();
-
-            if (ultimoTurno != null)
-            {
-                return ultimoTurno.Fecha.AddMinutes(ultimoTurno.Duracion);
-            }
-            else
-            {
-
-                DateTime fechaHoraActual = DateTime.Now;
-                DateTime horaInicioClinica = DateTime.Today.AddHours(8);
-                DateTime horaCierreClinica = DateTime.Today.AddHours(18);
-                int duracionMinimaTurno = ObtenerDuracionMinimaTurno(medicoSeleccionado.Especialidad);
-
-                DateTime proximaHoraDisponible;
-                if (fechaHoraActual < horaInicioClinica)
-                {
-                    proximaHoraDisponible = horaInicioClinica;
-                }
-                else if (fechaHoraActual >= horaCierreClinica)
-                {
-                    if (fechaHoraActual.DayOfWeek == DayOfWeek.Friday)
-                    {
-                        proximaHoraDisponible = fechaHoraActual.AddDays(3).Date.AddHours(8); // Sumamos 3 días para pasar al lunes
-                    }
-                    else
-                    {
-                        proximaHoraDisponible = fechaHoraActual.AddDays(1).Date.AddHours(8);
-                    }
-                }
-                else
-                {
-                    int minutosRestantes = 60 - fechaHoraActual.Minute;
-                    if (minutosRestantes < duracionMinimaTurno)
-                    {
-                        proximaHoraDisponible = fechaHoraActual.AddHours(1).AddMinutes(duracionMinimaTurno - minutosRestantes);
-                    }
-                    else
-                    {
-                        proximaHoraDisponible = fechaHoraActual.AddMinutes(minutosRestantes).AddMinutes(duracionMinimaTurno - (minutosRestantes % duracionMinimaTurno));
-                    }
-                }
-
-                return proximaHoraDisponible;
-            }
-        }
-
-
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (comboBox2.SelectedItem != null)
-            {
-                var medicoSeleccionado = (Medico)comboBox2.SelectedItem;
-                dateTimePicker1.Value = CalcularProximoTurnoDisponible(medicoSeleccionado);
+                MessageBox.Show("El horario seleccionado no es válido. Por favor, seleccione un horario entre las 8:00 y las 18:00 de lunes a viernes.", "Horario Inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
         }
 
@@ -328,5 +155,214 @@ namespace Clinica_SePrice
 
             return false;
         }
+        private DateTime CalcularProximoTurnoDisponible(Medico medicoSeleccionado)
+        {
+            if (medicoSeleccionado == null)
+            {
+                 throw new ArgumentNullException(nameof(medicoSeleccionado), "El médico seleccionado es nulo.");
+            }
+
+            var ultimoTurno = dbContext.Turnos
+                .Where(t => t.Medico.Id == medicoSeleccionado.Id)
+                .OrderByDescending(t => t.Fecha)
+                .FirstOrDefault();
+
+            DateTime proximaHoraDisponible;
+
+            if (ultimoTurno != null)
+            {
+                proximaHoraDisponible = ultimoTurno.Fecha.AddMinutes(ultimoTurno.Duracion);
+            }
+            else
+            {
+                proximaHoraDisponible = DateTime.Now;
+            }
+
+            // Ajustar la fecha si cae en fin de semana
+            if (proximaHoraDisponible.DayOfWeek == DayOfWeek.Saturday)
+            {
+                proximaHoraDisponible = proximaHoraDisponible.AddDays(2); // Pasar al lunes
+                proximaHoraDisponible = proximaHoraDisponible.Date.AddHours(8);
+            }
+            else if (proximaHoraDisponible.DayOfWeek == DayOfWeek.Sunday)
+            {
+                proximaHoraDisponible = proximaHoraDisponible.AddDays(1); // Pasar al lunes
+                proximaHoraDisponible = proximaHoraDisponible.Date.AddHours(8);
+            }
+            else if (proximaHoraDisponible.Hour >= 18)
+            {
+                proximaHoraDisponible = proximaHoraDisponible.Date.AddDays(1).AddHours(8);
+            }
+            else if (proximaHoraDisponible.Hour < 8)
+            {
+                proximaHoraDisponible = proximaHoraDisponible.Date.AddHours(8);
+            }
+
+            // Verificar que la fecha ajustada no caiga en fin de semana después de ajustar la hora
+            if (proximaHoraDisponible.DayOfWeek == DayOfWeek.Saturday)
+            {
+                proximaHoraDisponible = proximaHoraDisponible.AddDays(2); // Pasar al lunes
+            }
+            else if (proximaHoraDisponible.DayOfWeek == DayOfWeek.Sunday)
+            {
+                proximaHoraDisponible = proximaHoraDisponible.AddDays(1); // Pasar al lunes
+            }
+
+            return proximaHoraDisponible;
+        }
+
+        private void ActualizarDataGridView()
+        {
+            var turnos = dbContext.Turnos
+        .Where(t => t.MedicoId != null && !t.Validado)
+        .Include(t => t.Medico)
+        .Include(t => t.Paciente)
+        .ToList();
+
+            dataGridView1.Columns.Clear();
+            dataGridView1.Columns.Add("IdColumn", "ID");
+            dataGridView1.Columns.Add("FechaColumn", "Fecha");
+            dataGridView1.Columns.Add("HoraColumn", "Hora");
+            dataGridView1.Columns.Add("LugarColumn", "Consultorio");
+            dataGridView1.Columns.Add("MedicoColumn", "Médico");
+            dataGridView1.Columns.Add("NombrePacienteColumn", "Nombre Paciente");
+            dataGridView1.Columns.Add("ApellidoPacienteColumn", "Apellido Paciente");
+            dataGridView1.Columns.Add("DniPacienteColumn", "DNI Paciente");
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            dataGridView1.Rows.Clear();
+
+            foreach (var turno in turnos)
+            {
+                dataGridView1.Rows.Add(
+                    turno.Id,
+                    turno.Fecha.ToShortDateString(),
+                    turno.Fecha.ToShortTimeString(),
+                    turno.Lugar ?? "N/A",
+                    turno.Medico?.NombreCompleto ?? "N/A",
+                    turno.Paciente.Nombre,
+                    turno.Paciente.Apellido,
+                    turno.Paciente.Dni
+                );
+            }
+
+            
+            if (dataGridView1.Rows.Count == 0)
+            {
+                dataGridView1.Rows.Add("No hay turnos", "", "", "", "", "", "", "");
+                dataGridView1.Rows[0].DefaultCellStyle.Font = new Font(dataGridView1.Font, FontStyle.Italic);
+                dataGridView1.Rows[0].DefaultCellStyle.ForeColor = Color.Gray;
+            }
+        }
+
+     
+        private int turnoSeleccionadoId;
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                DataGridViewRow filaSeleccionada = dataGridView1.Rows[e.RowIndex];
+                int idTurno = Convert.ToInt32(filaSeleccionada.Cells["IdColumn"].Value);
+                turnoSeleccionadoId = idTurno;
+
+                // Si deseas cargar los datos para edición en los controles correspondientes
+                DateTime fecha = Convert.ToDateTime(filaSeleccionada.Cells["FechaColumn"].Value);
+                DateTime hora = Convert.ToDateTime(filaSeleccionada.Cells["HoraColumn"].Value);
+                string lugar = Convert.ToString(filaSeleccionada.Cells["LugarColumn"].Value);
+                string nombreMedico = Convert.ToString(filaSeleccionada.Cells["MedicoColumn"].Value);
+                string nombrePaciente = Convert.ToString(filaSeleccionada.Cells["NombrePacienteColumn"].Value);
+                string apellidoPaciente = Convert.ToString(filaSeleccionada.Cells["ApellidoPacienteColumn"].Value);
+                string dniPaciente = Convert.ToString(filaSeleccionada.Cells["DniPacienteColumn"].Value);
+
+                DateTime fechaHora = new DateTime(
+                fecha.Year, fecha.Month, fecha.Day,
+                hora.Hour, hora.Minute, hora.Second
+                );
+                // Asigna los valores a los controles del formulario
+                dateTimePicker1.Value = fechaHora;
+                textBox1.Text = nombrePaciente;
+                textBox2.Text = apellidoPaciente;
+                textBox3.Text = dniPaciente;
+                textBox4.Text = lugar;
+
+            }
+        }
+
+        private void buttonEditar_Click(object sender, EventArgs e)
+        {
+            if (turnoSeleccionadoId != 0)
+            {
+                var turno = dbContext.Turnos.Find(turnoSeleccionadoId);
+                if (turno != null)
+                {
+                    turno.Fecha = dateTimePicker1.Value;
+                    turno.Lugar = textBox4.Text;
+                    turno.Paciente.Nombre = textBox1.Text;
+                    turno.Paciente.Apellido = textBox2.Text;
+                    turno.Paciente.Dni = textBox3.Text;
+                    dbContext.SaveChanges();
+                    ActualizarDataGridView();
+                    LimpiarControles();
+                }
+            }
+        }
+
+        private void buttonBorrar_Click(object sender, EventArgs e)
+        {
+            if (turnoSeleccionadoId != -1)
+            {
+                DialogResult confirmacion = MessageBox.Show("¿Estás seguro de que deseas borrar este turno?", "Confirmación de Borrado", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (confirmacion == DialogResult.Yes)
+                {
+                    var turno = dbContext.Turnos.Find(turnoSeleccionadoId);
+                    if (turno != null)
+                    {
+                        dbContext.Turnos.Remove(turno);
+                        dbContext.SaveChanges();
+                        ActualizarDataGridView();
+                    }
+                    turnoSeleccionadoId = -1;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Por favor, selecciona un turno para borrar.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LimpiarControles()
+        {
+            textBox1.Clear();
+            textBox2.Clear();
+            textBox3.Clear();
+            textBox4.Clear();
+            comboBox2.SelectedIndex = -1;
+
+            // Establecer la fecha del dateTimePicker al próximo día hábil si es fin de semana
+            DateTime fecha = DateTime.Today;
+            if (fecha.DayOfWeek == DayOfWeek.Saturday)
+            {
+                fecha = fecha.AddDays(2); // Mueve al próximo lunes
+            }
+            else if (fecha.DayOfWeek == DayOfWeek.Sunday)
+            {
+                fecha = fecha.AddDays(1); // Mueve al próximo lunes
+            }
+
+            dateTimePicker1.Value = fecha;
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox2.SelectedItem != null)
+            {
+                var medicoSeleccionado = (Medico)comboBox2.SelectedItem;
+                dateTimePicker1.Value = CalcularProximoTurnoDisponible(medicoSeleccionado);
+            }
+        }
+
+
+       
     }
 }

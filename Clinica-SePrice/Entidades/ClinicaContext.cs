@@ -8,6 +8,10 @@ namespace Clinica_SePrice.Entidades
         public DbSet<Paciente> Pacientes { get; set; }
         public DbSet<Turno> Turnos { get; set; }
         public DbSet<SalaEspera> SalaEspera { get; set; }
+        public DbSet<EstudioMedico> EstudiosMedicos { get; set; }
+        public DbSet<Especialidad> Especialidades { get; set; }
+        public DbSet<EspecialidadEstudioMedico> EspecialidadesEstudiosMedicos { get; set; }
+
 
         public ClinicaContext(DbContextOptions<ClinicaContext> options) : base(options)
         {
@@ -30,9 +34,15 @@ namespace Clinica_SePrice.Entidades
             modelBuilder.Entity<Paciente>().ToTable("Pacientes");
             modelBuilder.Entity<Turno>().ToTable("Turnos");
             modelBuilder.Entity<SalaEspera>().ToTable("SalaEspera");
+            modelBuilder.Entity<EstudioMedico>().ToTable("EstudiosMedicos");
+            modelBuilder.Entity<Especialidad>().ToTable("Especialidades");
+            modelBuilder.Entity<EspecialidadEstudioMedico>().ToTable("EspecialidadesEstudiosMedicos");
+
+
         }
+    }
 
 
      
-    }
+    
 }

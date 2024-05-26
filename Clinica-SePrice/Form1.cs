@@ -33,13 +33,13 @@ namespace Clinica_SePrice
         private void Button2_Click(object sender, EventArgs e)
         {
             // Abre el formulario de Turnos de Estudios
-            FormTurnosEstudios formTurnosEstudios = new FormTurnosEstudios();
+            FormTurnosEstudios formTurnosEstudios = new FormTurnosEstudios(dbContext);
             formTurnosEstudios.Show();
         }
 
         private void Button3_Click(object sender, EventArgs e)
         {
-            
+
             FormVerTurnos formVerTurnos = new FormVerTurnos(dbContext);
             formVerTurnos.Show();
         }
@@ -49,6 +49,11 @@ namespace Clinica_SePrice
             // Abre el formulario de Sala de Espera
             FormSalaEspera formSalaEspera = new FormSalaEspera(dbContext);
             formSalaEspera.Show();
+        }
+        private void button4_Click(object sender, EventArgs e)
+        {
+            
+
         }
 
         private void ConectarBaseDatos()
@@ -75,5 +80,6 @@ namespace Clinica_SePrice
                 MessageBox.Show($"Error al conectar a la base de datos: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
     }
 }

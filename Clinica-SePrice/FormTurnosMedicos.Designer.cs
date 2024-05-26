@@ -192,8 +192,7 @@
             dataGridView1.ReadOnly = true;
             dataGridView1.Size = new Size(763, 230);
             dataGridView1.TabIndex = 16;
-            dataGridView1.CellClick += dataGridView1_CellClick;
-            dataGridView1.CellDoubleClick += dataGridView1_CellDoubleClick;
+            dataGridView1.CellDoubleClick += dataGridView1_CellClick;
             // 
             // label6
             // 

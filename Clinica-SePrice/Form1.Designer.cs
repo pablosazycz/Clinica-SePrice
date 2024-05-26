@@ -20,6 +20,7 @@
             button2 = new Button();
             button3 = new Button();
             btnVerSalaEspera = new Button();
+            button4 = new Button();
             SuspendLayout();
             // 
             // lblTitulo
@@ -34,7 +35,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(45, 108);
+            button1.Location = new Point(45, 118);
             button1.Name = "button1";
             button1.Size = new Size(96, 42);
             button1.TabIndex = 1;
@@ -44,9 +45,9 @@
             // 
             // button2
             // 
-            button2.Location = new Point(193, 108);
+            button2.Location = new Point(480, 108);
             button2.Name = "button2";
-            button2.Size = new Size(88, 42);
+            button2.Size = new Size(96, 42);
             button2.TabIndex = 2;
             button2.Text = "Turnos Estudios";
             button2.UseVisualStyleBackColor = true;
@@ -54,9 +55,9 @@
             // 
             // button3
             // 
-            button3.Location = new Point(346, 101);
+            button3.Location = new Point(45, 181);
             button3.Name = "button3";
-            button3.Size = new Size(101, 52);
+            button3.Size = new Size(96, 50);
             button3.TabIndex = 3;
             button3.Text = "Ver Turnos";
             button3.UseVisualStyleBackColor = true;
@@ -64,19 +65,30 @@
             // 
             // btnVerSalaEspera
             // 
-            btnVerSalaEspera.Location = new Point(470, 98);
+            btnVerSalaEspera.Location = new Point(45, 257);
             btnVerSalaEspera.Name = "btnVerSalaEspera";
-            btnVerSalaEspera.Size = new Size(101, 52);
+            btnVerSalaEspera.Size = new Size(96, 47);
             btnVerSalaEspera.TabIndex = 3;
             btnVerSalaEspera.Text = "Ver Sala de Espera";
             btnVerSalaEspera.UseVisualStyleBackColor = true;
             btnVerSalaEspera.Click += btnVerSalaEspera_Click;
+            // 
+            // button4
+            // 
+            button4.Location = new Point(241, 137);
+            button4.Name = "button4";
+            button4.Size = new Size(118, 43);
+            button4.TabIndex = 4;
+            button4.Text = "Ingreso Pacientes";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(button4);
             Controls.Add(btnVerSalaEspera);
             Controls.Add(button3);
             Controls.Add(button2);
@@ -93,5 +105,6 @@
         private Button button2;
         private Button button3;
         private Button btnVerSalaEspera;
+        private Button button4;
     }
 }

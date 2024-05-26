@@ -14,8 +14,13 @@ namespace Clinica_SePrice.Entidades
         public string Nombre { get; set; }
         public string Apellido { get; set; }
         public string Dni { get; set; }
+        //public string Direccion { get; set; }
+        //public string Email { get; set; }
+        //public string Telefono { get; set; }
+
         public bool EnSalaEspera { get; set;}
 
+        public ICollection<Turno> Turnos { get; set; }
 
         //public string NroTelefono { get; set; }
         //public string HistoriaClinica { get; set; }

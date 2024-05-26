@@ -17,11 +17,7 @@ namespace Clinica_SePrice
     public partial class FormVerTurnos : Form
     {
         private ClinicaContext dbContext;
-
-        public FormVerTurnos()
-        {
-        }
-
+               
         public FormVerTurnos(ClinicaContext dbContext)
         {
             this.dbContext = dbContext;
@@ -32,7 +28,11 @@ namespace Clinica_SePrice
 
         private void ActualizarDataGridView()
         {
-            var turnosNoValidados = dbContext.Turnos.Where(t => !t.Validado).ToList();
+            var turnosNoValidados = dbContext.Turnos
+                                .Include(t => t.Medico)
+                                .Include(t => t.Paciente)
+                                .Where(t => !t.Validado && t.MedicoId != null)
+                                .ToList();
 
             dataGridView1.Columns.Clear();
             dataGridView1.Columns.Add("IdColumn", "ID");
@@ -58,38 +58,112 @@ namespace Clinica_SePrice
                     turno.Id,
                     turno.Fecha.ToShortDateString(),
                     turno.Fecha.ToShortTimeString(),
-                    turno.Lugar,
-                    turno.Medico.NombreCompleto,
-                    turno.Paciente.Nombre,
-                    turno.Paciente.Apellido,
-                    turno.Paciente.Dni
+                    turno.Lugar ?? "N/A",
+                    turno.Medico?.NombreCompleto ?? "N/A",
+                    turno.Paciente?.Nombre ?? "N/A",
+                    turno.Paciente?.Apellido ?? "N/A",
+                    turno.Paciente?.Dni ?? "N/A"
+                );
+            }
+
+            var turnosNoValidadosEstudios = dbContext.Turnos
+                                .Include(t => t.Estudio)
+                                .Include(t => t.Paciente)
+                                .Where(t => !t.Validado && t.EstudioMedicoId != 0 && t.EstudioMedicoId != null)
+                                .ToList();
+
+            dataGridView2.Columns.Clear();
+            dataGridView2.Columns.Add("IdColumn", "ID");
+            dataGridView2.Columns.Add("FechaColumn", "Fecha");
+            dataGridView2.Columns.Add("HoraColumn", "Hora");
+            dataGridView2.Columns.Add("EstudioColumn", "Estudio Médico");
+            dataGridView2.Columns.Add("NombrePacienteColumn", "Nombre Paciente");
+            dataGridView2.Columns.Add("ApellidoPacienteColumn", "Apellido Paciente");
+            dataGridView2.Columns.Add("DniPacienteColumn", "DNI Paciente");
+
+            DataGridViewButtonColumn columnaBoton2 = new DataGridViewButtonColumn();
+            columnaBoton2.Name = "Verificar Llegada";
+            columnaBoton2.HeaderText = "Verificar Llegada";
+            columnaBoton2.Text = "Verificar";
+            columnaBoton2.UseColumnTextForButtonValue = true;
+            dataGridView2.Columns.Add(columnaBoton2);
+            dataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            foreach (var turno in turnosNoValidadosEstudios)
+            {
+                dataGridView2.Rows.Add(
+                    turno.Id,
+                    turno.Fecha.ToShortDateString(),
+                    turno.Fecha.ToShortTimeString(),
+                    turno.Estudio?.Nombre ?? "N/A",
+                    turno.Paciente?.Nombre ?? "N/A",
+                    turno.Paciente?.Apellido ?? "N/A",
+                    turno.Paciente?.Dni ?? "N/A"
                 );
             }
         }
 
         private void FiltroPaciente(string filtro)
         {
-            var turnosFiltrados = dbContext.Turnos
-                                    .Include("Medico")
-                                    .Include("Paciente")
-                                    .Where(t => !t.Validado && (t.Paciente.Nombre.Contains(filtro) || t.Paciente.Apellido.Contains(filtro) || t.Paciente.Dni.Contains(filtro)))
-                                    .ToList();
+            var turnosMedicosFiltrados = dbContext.Turnos
+                .Include(t => t.Medico)
+                .Include(t => t.Paciente)
+                .Where(t => t.MedicoId != null && !t.Validado &&
+                            (t.Paciente.Nombre.Contains(filtro) ||
+                             t.Paciente.Apellido.Contains(filtro) ||
+                             t.Paciente.Dni.Contains(filtro)))
+                .ToList();
 
+            var turnosEstudiosFiltrados = dbContext.Turnos
+                .Include(t => t.Estudio)
+                .Include(t => t.Paciente)
+                .Where(t => t.EstudioMedicoId != null && !t.Validado &&
+                            (t.Paciente.Nombre.Contains(filtro) ||
+                             t.Paciente.Apellido.Contains(filtro) ||
+                             t.Paciente.Dni.Contains(filtro)))
+                .ToList();
 
-            dataGridView1.Rows.Clear();
+          
+            ActualizarDataGridView(dataGridView1, turnosMedicosFiltrados, isMedico: true);
+            ActualizarDataGridView(dataGridView2, turnosEstudiosFiltrados, isMedico: false);
+        }
 
-            foreach (var turno in turnosFiltrados)
+        private void ActualizarDataGridView(DataGridView dgv, List<Turno> turnos, bool isMedico)
+        {
+            dgv.Rows.Clear();
+            foreach (var turno in turnos)
             {
-                dataGridView1.Rows.Add(
-                    turno.Id,
-                    turno.Fecha.ToShortDateString(),
-                    turno.Fecha.ToShortTimeString(),
-                    turno.Lugar,
-                    turno.Medico.NombreCompleto,
-                    turno.Paciente.Nombre,
-                    turno.Paciente.Apellido,
-                    turno.Paciente.Dni
-                );
+                if (isMedico)
+                {
+                    dgv.Rows.Add(
+                        turno.Id,
+                        turno.Fecha.ToShortDateString(),
+                        turno.Fecha.ToShortTimeString(),
+                        turno.Lugar ?? "N/A",
+                        turno.Medico?.NombreCompleto ?? "N/A",
+                        turno.Paciente?.Nombre ?? "N/A",
+                        turno.Paciente?.Apellido ?? "N/A",
+                        turno.Paciente?.Dni ?? "N/A"
+                    );
+                }
+                else
+                {
+                    dgv.Rows.Add(
+                        turno.Id,
+                        turno.Fecha.ToShortDateString(),
+                        turno.Fecha.ToShortTimeString(),
+                        turno.Estudio?.Nombre ?? "N/A",
+                        turno.Paciente?.Nombre ?? "N/A",
+                        turno.Paciente?.Apellido ?? "N/A",
+                        turno.Paciente?.Dni ?? "N/A"
+                    );
+                }
+            }
+
+            // Agregar mensaje de no hay turnos si no hay datos
+            if (dgv.Rows.Count == 0)
+            {
+                dgv.Rows.Add("No hay turnos sin validar");
             }
         }
 
@@ -98,13 +172,13 @@ namespace Clinica_SePrice
             string filtro = txtBuscarTurnos.Text;
             FiltroPaciente(filtro);
         }
-
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+ 
+        private void VerificarLlegada(DataGridView dataGridView, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && e.ColumnIndex == dataGridView1.Columns["Verificar Llegada"].Index)
+            if (e.RowIndex >= 0 && e.ColumnIndex == dataGridView.Columns["Verificar Llegada"].Index)
             {
                 int indiceTurno = e.RowIndex;
-                int idTurno = Convert.ToInt32(dataGridView1.Rows[indiceTurno].Cells["IdColumn"].Value);
+                int idTurno = Convert.ToInt32(dataGridView.Rows[indiceTurno].Cells["IdColumn"].Value);
 
                 DialogResult result = MessageBox.Show("¿Desea marcar el turno como verificado?", "Verificar Llegada", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == DialogResult.Yes)
@@ -113,31 +187,22 @@ namespace Clinica_SePrice
 
                     if (turno != null)
                     {
-                        // Actualizar el campo "Validado" a true
                         turno.Validado = true;
-
-                        // Guardar los cambios en la base de datos
                         dbContext.SaveChanges();
 
-                        // Crear la sala de espera
                         SalaEspera salaEspera = new SalaEspera
                         {
                             HoraEntrada = DateTime.Now,
                             TurnoId = turno.Id
                         };
 
-                        // Agregar la sala de espera a la base de datos
                         dbContext.SalaEspera.Add(salaEspera);
                         dbContext.SaveChanges();
 
-                        // Obtener el id de la sala de espera recién creada
                         int idSalaEspera = salaEspera.Id;
-
-                        // Actualizar el turno con el id de la sala de espera
                         turno.SalaEsperaId = idSalaEspera;
                         dbContext.SaveChanges();
-                        dataGridView1.Rows.RemoveAt(indiceTurno);
-                        // Resto del código para actualizar la interfaz de usuario
+                        dataGridView.Rows.RemoveAt(indiceTurno);
                     }
                     else
                     {
@@ -147,7 +212,22 @@ namespace Clinica_SePrice
             }
         }
 
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            VerificarLlegada(dataGridView1, e);
+        }
 
+        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            VerificarLlegada(dataGridView2, e);
+        }
+
+        private void btnBorrar_Click(object sender, EventArgs e)
+        {
+            txtBuscarTurnos.Text = "";
+        }
+
+      
 
 
     }

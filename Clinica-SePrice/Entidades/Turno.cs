@@ -22,12 +22,20 @@ namespace Clinica_SePrice.Entidades
         // public string Estado { get; set; }
 
         // Propiedades de las claves foráneas
-        public int MedicoId { get; set; }
+        public int? MedicoId { get; set; }
         public int PacienteId { get; set; }
         public int? SalaEsperaId { get; set; }
+        public int? EstudioMedicoId { get; set; }
 
+        
+        [ForeignKey("MedicoId")]
         public Medico Medico { get; set; }
+
+        [ForeignKey("PacienteId")]
         public Paciente Paciente { get; set; }
+
+        [ForeignKey("EstudioMedicoId")]
+        public EstudioMedico Estudio { get; set; }
 
         [ForeignKey("SalaEsperaId")]
         public SalaEspera SalaEspera { get; set; }

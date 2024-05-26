@@ -7,21 +7,15 @@ using System.Threading.Tasks;
 
 namespace Clinica_SePrice.Entidades
 {
-    public class Medico
+    public class EstudioMedico
     {
         [Key]
         public int Id { get; set; }
         public string Nombre { get; set; }
-        public string Apellido { get; set; }
-        public string Especialidad { get; set; }
-        //public string Matricula { get; set; }
-        //public string NroTelefono { get; set; }
+        public string Descripcion { get; set; }
+        public decimal Precio { get; set; }
 
         public ICollection<Turno> Turnos { get; set; }
-        public string NombreCompleto
-        {
-            get { return $"{Nombre} {Apellido}"; }
-        }
-
+        public ICollection<EspecialidadEstudioMedico> Especialidades { get; set; }
     }
 }
