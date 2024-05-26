@@ -21,7 +21,12 @@ namespace Clinica_SePrice
             this.dbContext = dbContext;
             InitializeComponent();
             CargarEspecialidades();
+            
             InicializarDateTimePicker();
+            if (cmbEspecialidad.SelectedItem is Especialidad selectedEspecialidad)
+            {
+                CargarEstudiosMedicosPorEspecialidad(selectedEspecialidad.Id);
+            }
             ActualizarDataGridView();
         }
         private void CargarEspecialidades()
@@ -71,7 +76,7 @@ namespace Clinica_SePrice
                 DateTime proximaFechaHoraDisponible = CalcularProximoTurnoDisponible(estudioMedicoSeleccionado);
                 dateTimePicker1.Value = proximaFechaHoraDisponible;
             }
-        }
+        }   
         private void LimpiarControles()
         {
             txtNombre.Clear();
@@ -81,15 +86,15 @@ namespace Clinica_SePrice
             cmbEstudioMedico.SelectedIndex = -1;
             cmbEspecialidad.SelectedIndex = -1;
 
-            // Establecer la fecha del dateTimePicker al próximo día hábil si es fin de semana
+         
             DateTime fecha = DateTime.Today;
             if (fecha.DayOfWeek == DayOfWeek.Saturday)
             {
-                fecha = fecha.AddDays(2); // Mueve al próximo lunes
+                fecha = fecha.AddDays(2);
             }
             else if (fecha.DayOfWeek == DayOfWeek.Sunday)
             {
-                fecha = fecha.AddDays(1); // Mueve al próximo lunes
+                fecha = fecha.AddDays(1);
             }
 
             dateTimePicker1.Value = fecha;
