@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             label1 = new Label();
-            textBox1 = new TextBox();
-            textBox2 = new TextBox();
+            txtNombre = new TextBox();
+            txtApellido = new TextBox();
             label2 = new Label();
-            textBox3 = new TextBox();
+            txtDni = new TextBox();
             label3 = new Label();
             label4 = new Label();
             cmbEspecialidad = new ComboBox();
@@ -46,52 +46,58 @@
             button1 = new Button();
             cmbEstudioMedico = new ComboBox();
             label7 = new Label();
+            btnBuscarDni = new Button();
+            txtBuscarDni = new TextBox();
+            label8 = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(15, 23);
+            label1.Location = new Point(15, 46);
             label1.Name = "label1";
             label1.Size = new Size(51, 15);
             label1.TabIndex = 0;
             label1.Text = "Nombre";
             // 
-            // textBox1
+            // txtNombre
             // 
-            textBox1.Location = new Point(72, 15);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(100, 23);
-            textBox1.TabIndex = 1;
+            txtNombre.Location = new Point(72, 43);
+            txtNombre.Name = "txtNombre";
+            txtNombre.ReadOnly = true;
+            txtNombre.Size = new Size(100, 23);
+            txtNombre.TabIndex = 1;
             // 
-            // textBox2
+            // txtApellido
             // 
-            textBox2.Location = new Point(72, 53);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(100, 23);
-            textBox2.TabIndex = 3;
+            txtApellido.Location = new Point(72, 72);
+            txtApellido.Name = "txtApellido";
+            txtApellido.ReadOnly = true;
+            txtApellido.Size = new Size(100, 23);
+            txtApellido.TabIndex = 3;
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(15, 61);
+            label2.Location = new Point(15, 76);
             label2.Name = "label2";
             label2.Size = new Size(51, 15);
             label2.TabIndex = 2;
             label2.Text = "Apellido";
             // 
-            // textBox3
+            // txtDni
             // 
-            textBox3.Location = new Point(72, 89);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(100, 23);
-            textBox3.TabIndex = 5;
+            txtDni.Location = new Point(72, 101);
+            txtDni.Name = "txtDni";
+            txtDni.ReadOnly = true;
+            txtDni.Size = new Size(100, 23);
+            txtDni.TabIndex = 5;
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(15, 97);
+            label3.Location = new Point(28, 104);
             label3.Name = "label3";
             label3.Size = new Size(25, 15);
             label3.TabIndex = 4;
@@ -100,7 +106,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(206, 89);
+            label4.Location = new Point(206, 104);
             label4.Name = "label4";
             label4.Size = new Size(72, 15);
             label4.TabIndex = 6;
@@ -109,7 +115,7 @@
             // cmbEspecialidad
             // 
             cmbEspecialidad.FormattingEnabled = true;
-            cmbEspecialidad.Location = new Point(284, 81);
+            cmbEspecialidad.Location = new Point(284, 101);
             cmbEspecialidad.Name = "cmbEspecialidad";
             cmbEspecialidad.Size = new Size(164, 23);
             cmbEspecialidad.TabIndex = 7;
@@ -135,17 +141,17 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(15, 144);
+            label5.Location = new Point(15, 153);
             label5.Name = "label5";
             label5.Size = new Size(38, 15);
             label5.TabIndex = 9;
-            label5.Text = "label5";
+            label5.Text = "Fecha";
             // 
             // dateTimePicker1
             // 
             dateTimePicker1.CustomFormat = "dddd dd/MM/yyyy   HH:mm";
             dateTimePicker1.Format = DateTimePickerFormat.Custom;
-            dateTimePicker1.Location = new Point(72, 138);
+            dateTimePicker1.Location = new Point(72, 147);
             dateTimePicker1.Name = "dateTimePicker1";
             dateTimePicker1.Size = new Size(304, 23);
             dateTimePicker1.TabIndex = 10;
@@ -154,7 +160,7 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(472, 23);
+            label6.Location = new Point(472, 73);
             label6.Name = "label6";
             label6.Size = new Size(48, 15);
             label6.TabIndex = 11;
@@ -162,7 +168,7 @@
             // 
             // textBox4
             // 
-            textBox4.Location = new Point(536, 15);
+            textBox4.Location = new Point(536, 65);
             textBox4.Multiline = true;
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(198, 59);
@@ -201,7 +207,7 @@
             // cmbEstudioMedico
             // 
             cmbEstudioMedico.FormattingEnabled = true;
-            cmbEstudioMedico.Location = new Point(284, 20);
+            cmbEstudioMedico.Location = new Point(284, 68);
             cmbEstudioMedico.Name = "cmbEstudioMedico";
             cmbEstudioMedico.Size = new Size(164, 23);
             cmbEstudioMedico.TabIndex = 17;
@@ -209,17 +215,46 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(219, 15);
+            label7.Location = new Point(219, 63);
             label7.Name = "label7";
             label7.Size = new Size(47, 30);
             label7.TabIndex = 16;
             label7.Text = "Estudio\r\nMedico";
+            // 
+            // btnBuscarDni
+            // 
+            btnBuscarDni.Location = new Point(354, 5);
+            btnBuscarDni.Name = "btnBuscarDni";
+            btnBuscarDni.Size = new Size(75, 23);
+            btnBuscarDni.TabIndex = 26;
+            btnBuscarDni.Text = "Buscar";
+            btnBuscarDni.UseVisualStyleBackColor = true;
+            btnBuscarDni.Click += btnBuscarDni_Click;
+            // 
+            // txtBuscarDni
+            // 
+            txtBuscarDni.Location = new Point(155, 6);
+            txtBuscarDni.Name = "txtBuscarDni";
+            txtBuscarDni.Size = new Size(182, 23);
+            txtBuscarDni.TabIndex = 25;
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(15, 9);
+            label8.Name = "label8";
+            label8.Size = new Size(134, 15);
+            label8.TabIndex = 24;
+            label8.Text = "Buscar Paciente por DNI";
             // 
             // FormTurnosEstudios
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnBuscarDni);
+            Controls.Add(txtBuscarDni);
+            Controls.Add(label8);
             Controls.Add(cmbEstudioMedico);
             Controls.Add(label7);
             Controls.Add(button3);
@@ -232,11 +267,11 @@
             Controls.Add(dataGridView1);
             Controls.Add(cmbEspecialidad);
             Controls.Add(label4);
-            Controls.Add(textBox3);
+            Controls.Add(txtDni);
             Controls.Add(label3);
-            Controls.Add(textBox2);
+            Controls.Add(txtApellido);
             Controls.Add(label2);
-            Controls.Add(textBox1);
+            Controls.Add(txtNombre);
             Controls.Add(label1);
             Name = "FormTurnosEstudios";
             Text = "FormTurnosEstudios";
@@ -248,10 +283,10 @@
         #endregion
 
         private Label label1;
-        private TextBox textBox1;
-        private TextBox textBox2;
+        private TextBox txtNombre;
+        private TextBox txtApellido;
         private Label label2;
-        private TextBox textBox3;
+        private TextBox txtDni;
         private Label label3;
         private Label label4;
         private ComboBox cmbEspecialidad;
@@ -265,5 +300,8 @@
         private Button button1;
         private ComboBox cmbEstudioMedico;
         private Label label7;
+        private Button btnBuscarDni;
+        private TextBox txtBuscarDni;
+        private Label label8;
     }
 }

@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace Clinica_SePrice
 {
-    public partial class FormTurnosMedicos : Form   
+    public partial class FormTurnosMedicos : Form
     {
         private ClinicaContext dbContext;
 
@@ -17,7 +17,7 @@ namespace Clinica_SePrice
         {
             this.dbContext = dbContext;
             InitializeComponent();
-            CargarEspecialidades();           
+            CargarEspecialidades();
             ActualizarDataGridView();
         }
         private void CargarEspecialidades()
@@ -67,15 +67,15 @@ namespace Clinica_SePrice
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (comboBox2.SelectedItem == null || string.IsNullOrEmpty(textBox1.Text) || string.IsNullOrEmpty(textBox2.Text))
+            if (comboBox2.SelectedItem == null || string.IsNullOrEmpty(txtNombre.Text) || string.IsNullOrEmpty(txtApellido.Text))
             {
                 MessageBox.Show("Por favor, complete todos los campos para agendar la cita.", "Campos Incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            string nombrePaciente = textBox1.Text;
-            string apellidoPaciente = textBox2.Text;
-            string dniPaciente = textBox3.Text;
+            string nombrePaciente = txtNombre.Text;
+            string apellidoPaciente = txtApellido.Text;
+            string dniPaciente = txtDni.Text;
             string consultorio = textBox4.Text;
             string especialidadSeleccionada = comboBox1.SelectedItem.ToString();
             Medico medicoSeleccionado = (Medico)comboBox2.SelectedItem;
@@ -159,7 +159,7 @@ namespace Clinica_SePrice
         {
             if (medicoSeleccionado == null)
             {
-                 throw new ArgumentNullException(nameof(medicoSeleccionado), "El médico seleccionado es nulo.");
+                throw new ArgumentNullException(nameof(medicoSeleccionado), "El médico seleccionado es nulo.");
             }
 
             var ultimoTurno = dbContext.Turnos
@@ -246,7 +246,7 @@ namespace Clinica_SePrice
                 );
             }
 
-            
+
             if (dataGridView1.Rows.Count == 0)
             {
                 dataGridView1.Rows.Add("No hay turnos", "", "", "", "", "", "", "");
@@ -255,7 +255,7 @@ namespace Clinica_SePrice
             }
         }
 
-     
+
         private int turnoSeleccionadoId;
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -281,9 +281,9 @@ namespace Clinica_SePrice
                 );
                 // Asigna los valores a los controles del formulario
                 dateTimePicker1.Value = fechaHora;
-                textBox1.Text = nombrePaciente;
-                textBox2.Text = apellidoPaciente;
-                textBox3.Text = dniPaciente;
+                txtNombre.Text = nombrePaciente;
+                txtApellido.Text = apellidoPaciente;
+                txtDni.Text = dniPaciente;
                 textBox4.Text = lugar;
 
             }
@@ -298,9 +298,9 @@ namespace Clinica_SePrice
                 {
                     turno.Fecha = dateTimePicker1.Value;
                     turno.Lugar = textBox4.Text;
-                    turno.Paciente.Nombre = textBox1.Text;
-                    turno.Paciente.Apellido = textBox2.Text;
-                    turno.Paciente.Dni = textBox3.Text;
+                    turno.Paciente.Nombre = txtNombre.Text;
+                    turno.Paciente.Apellido = txtApellido.Text;
+                    turno.Paciente.Dni = txtDni.Text;
                     dbContext.SaveChanges();
                     ActualizarDataGridView();
                     LimpiarControles();
@@ -333,9 +333,9 @@ namespace Clinica_SePrice
 
         private void LimpiarControles()
         {
-            textBox1.Clear();
-            textBox2.Clear();
-            textBox3.Clear();
+            txtNombre.Clear();
+            txtApellido.Clear();
+            txtDni.Clear();
             textBox4.Clear();
             comboBox2.SelectedIndex = -1;
 
@@ -362,7 +362,28 @@ namespace Clinica_SePrice
             }
         }
 
+   
+        private void btnBuscarDni_Click(object sender, EventArgs e)
+        {
+            string dni = txtBuscarDni.Text;
+            if (string.IsNullOrEmpty(dni))
+            {
+                MessageBox.Show("Por favor, ingrese un DNI para buscar.", "Campo Requerido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
-       
+            Paciente paciente = dbContext.Pacientes.FirstOrDefault(p => p.Dni == dni);
+            if (paciente != null)
+            {
+                txtNombre.Text = paciente.Nombre;
+                txtApellido.Text = paciente.Apellido;
+                txtDni.Text = paciente.Dni;
+            }
+            else
+            {
+                MessageBox.Show("No se encontró ningún paciente con el DNI ingresado.", "Paciente No Encontrado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LimpiarControles();
+            }
+        }
     }
 }

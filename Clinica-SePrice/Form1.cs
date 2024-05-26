@@ -52,7 +52,8 @@ namespace Clinica_SePrice
         }
         private void button4_Click(object sender, EventArgs e)
         {
-            
+            IngresoPacientes formPaciente = new IngresoPacientes(dbContext);
+            formPaciente.Show();
 
         }
 

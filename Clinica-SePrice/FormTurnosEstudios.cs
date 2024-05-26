@@ -74,9 +74,9 @@ namespace Clinica_SePrice
         }
         private void LimpiarControles()
         {
-            textBox1.Clear();
-            textBox2.Clear();
-            textBox3.Clear();
+            txtNombre.Clear();
+            txtApellido.Clear();
+            txtDni.Clear();
             textBox4.Clear();
             cmbEstudioMedico.SelectedIndex = -1;
             cmbEspecialidad.SelectedIndex = -1;
@@ -96,15 +96,15 @@ namespace Clinica_SePrice
         }
         private void button1_Click(object sender, EventArgs e) //agendar
         {
-            if (string.IsNullOrEmpty(textBox1.Text) || string.IsNullOrEmpty(textBox2.Text) || string.IsNullOrEmpty(textBox3.Text) || string.IsNullOrEmpty(textBox4.Text) || cmbEspecialidad.SelectedItem == null)
+            if (string.IsNullOrEmpty(txtNombre.Text) || string.IsNullOrEmpty(txtApellido.Text) || string.IsNullOrEmpty(txtDni.Text) || string.IsNullOrEmpty(textBox4.Text) || cmbEspecialidad.SelectedItem == null)
             {
                 MessageBox.Show("Por favor, complete todos los campos para agendar la cita.", "Campos Incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            string nombrePaciente = textBox1.Text;
-            string apellidoPaciente = textBox2.Text;
-            string dniPaciente = textBox3.Text;
+            string nombrePaciente = txtNombre.Text;
+            string apellidoPaciente = txtApellido.Text;
+            string dniPaciente = txtDni.Text;
             EstudioMedico estudioMedico = (EstudioMedico)cmbEstudioMedico.SelectedItem;
             Especialidad especialidadSeleccionada = (Especialidad)cmbEspecialidad.SelectedItem;
 
@@ -365,9 +365,9 @@ namespace Clinica_SePrice
                 );
                 // Asigna los valores a los controles del formulario
                 dateTimePicker1.Value = fechaHora;
-                textBox1.Text = nombrePaciente;
-                textBox2.Text = apellidoPaciente;
-                textBox3.Text = dniPaciente;
+                txtNombre.Text = nombrePaciente;
+                txtApellido.Text = apellidoPaciente;
+                txtDni.Text = dniPaciente;
 
             }
         }
@@ -380,9 +380,9 @@ namespace Clinica_SePrice
                 if (turno != null)
                 {
                     turno.Fecha = dateTimePicker1.Value;
-                    turno.Paciente.Nombre = textBox1.Text;
-                    turno.Paciente.Apellido = textBox2.Text;
-                    turno.Paciente.Dni = textBox3.Text;
+                    turno.Paciente.Nombre = txtNombre.Text;
+                    turno.Paciente.Apellido = txtApellido.Text;
+                    turno.Paciente.Dni = txtDni.Text;
                     dbContext.SaveChanges();
                     ActualizarDataGridView();
                     LimpiarControles();
@@ -413,5 +413,27 @@ namespace Clinica_SePrice
             }
         }
 
+        private void btnBuscarDni_Click(object sender, EventArgs e)
+        {
+            string dni = txtBuscarDni.Text;
+            if (string.IsNullOrEmpty(dni))
+            {
+                MessageBox.Show("Por favor, ingrese un DNI para buscar.", "Campo Requerido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            Paciente paciente = dbContext.Pacientes.FirstOrDefault(p => p.Dni == dni);
+            if (paciente != null)
+            {
+                txtNombre.Text = paciente.Nombre;
+                txtApellido.Text = paciente.Apellido;
+                txtDni.Text = paciente.Dni;
+            }
+            else
+            {
+                MessageBox.Show("No se encontró ningún paciente con el DNI ingresado.", "Paciente No Encontrado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LimpiarControles();
+            }
+        }
     }
 }
