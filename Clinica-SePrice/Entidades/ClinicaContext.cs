@@ -11,7 +11,7 @@ namespace Clinica_SePrice.Entidades
         public DbSet<EstudioMedico> EstudiosMedicos { get; set; }
         public DbSet<Especialidad> Especialidades { get; set; }
         public DbSet<EspecialidadEstudioMedico> EspecialidadesEstudiosMedicos { get; set; }
-
+        public DbSet<Pago> Pagos { get; set; }
 
         public ClinicaContext(DbContextOptions<ClinicaContext> options) : base(options)
         {
@@ -37,6 +37,7 @@ namespace Clinica_SePrice.Entidades
             modelBuilder.Entity<EstudioMedico>().ToTable("EstudiosMedicos");
             modelBuilder.Entity<Especialidad>().ToTable("Especialidades");
             modelBuilder.Entity<EspecialidadEstudioMedico>().ToTable("EspecialidadesEstudiosMedicos");
+            modelBuilder.Entity<Pago>().ToTable("Pagos");
 
 
         }
