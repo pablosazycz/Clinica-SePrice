@@ -72,7 +72,7 @@ namespace Clinica_SePrice
                 MessageBox.Show("Por favor, complete todos los campos para agendar la cita.", "Campos Incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
+            bool sobreturno = chkSobreturno.Checked;
             string nombrePaciente = txtNombre.Text;
             string apellidoPaciente = txtApellido.Text;
             string dniPaciente = txtDni.Text;
@@ -82,6 +82,21 @@ namespace Clinica_SePrice
 
             DateTime fechaHoraInicio = dateTimePicker1.Value;
             DateTime fechaHoraFin = fechaHoraInicio.AddMinutes(ObtenerDuracionMinimaTurno(medicoSeleccionado.Especialidad));
+
+            DateTime inicioIntervalo = new DateTime(fechaHoraInicio.Year, fechaHoraInicio.Month, fechaHoraInicio.Day, fechaHoraInicio.Hour, 0, 0);
+            DateTime finIntervalo = inicioIntervalo.AddHours(1);
+
+            var haySobreturno = dbContext.Turnos
+        .Any(t => t.MedicoId == medicoSeleccionado.Id &&
+                  t.Sobreturno &&
+                  t.Fecha >= inicioIntervalo &&
+                  t.Fecha < finIntervalo);
+
+            if (haySobreturno)
+            {
+                MessageBox.Show("Ya existe un sobreturno en esta hora para este médico. No se permiten más sobreturnos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             bool turnoProgramado = VerificarTurnoProgramado(medicoSeleccionado, fechaHoraInicio, fechaHoraFin);
             if (turnoProgramado)
@@ -102,6 +117,7 @@ namespace Clinica_SePrice
                     Medico = medicoSeleccionado,
                     Duracion = ObtenerDuracionMinimaTurno(medicoSeleccionado.Especialidad),
                     EstudioMedicoId = null,
+                    Sobreturno = sobreturno,
                     Paciente = new Paciente
                     {
                         Nombre = nombrePaciente,

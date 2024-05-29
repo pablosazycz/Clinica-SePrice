@@ -50,6 +50,7 @@
             txtBuscarDni = new TextBox();
             label7 = new Label();
             btnBuscarDni = new Button();
+            chkSobreturno = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -251,11 +252,22 @@
             btnBuscarDni.UseVisualStyleBackColor = true;
             btnBuscarDni.Click += btnBuscarDni_Click;
             // 
+            // chkSobreturno
+            // 
+            chkSobreturno.AutoSize = true;
+            chkSobreturno.Location = new Point(321, 149);
+            chkSobreturno.Name = "chkSobreturno";
+            chkSobreturno.Size = new Size(104, 19);
+            chkSobreturno.TabIndex = 24;
+            chkSobreturno.Text = "Es Sobreturno?";
+            chkSobreturno.UseVisualStyleBackColor = true;
+            // 
             // FormTurnosMedicos
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(chkSobreturno);
             Controls.Add(btnBuscarDni);
             Controls.Add(txtBuscarDni);
             Controls.Add(label7);
@@ -309,5 +321,6 @@
         private TextBox txtBuscarDni;
         private Label label7;
         private Button btnBuscarDni;
+        private CheckBox chkSobreturno;
     }
 }

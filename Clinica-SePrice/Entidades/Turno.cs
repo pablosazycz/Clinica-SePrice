@@ -19,7 +19,7 @@ namespace Clinica_SePrice.Entidades
         public string Observaciones { get; set; }
         public int Duracion { get; set; }
         public bool Validado { get; set; }
-        // public string Estado { get; set; }
+        public bool Sobreturno { get; set; } = false;      // public string Estado { get; set; }
 
         // Propiedades de las claves foráneas
         public int? MedicoId { get; set; }
