@@ -180,37 +180,52 @@ namespace Clinica_SePrice
                 int indiceTurno = e.RowIndex;
                 int idTurno = Convert.ToInt32(dataGridView.Rows[indiceTurno].Cells["IdColumn"].Value);
 
-                DialogResult result = MessageBox.Show("¿Desea marcar el turno como verificado?", "Verificar Llegada", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (result == DialogResult.Yes)
-                {
-                    var turno = dbContext.Turnos.Find(idTurno);
+                FormPago formPago = new FormPago(this, idTurno, dbContext);
+                formPago.ShowDialog();
 
-                    if (turno != null)
-                    {
-                        turno.Validado = true;
-                        dbContext.SaveChanges();
+                //DialogResult result = MessageBox.Show("¿Desea marcar el turno como verificado?", "Verificar Llegada", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                //if (result == DialogResult.Yes)
+                //{
+                //    var turno = dbContext.Turnos.Find(idTurno);
 
-                        SalaEspera salaEspera = new SalaEspera
-                        {
-                            HoraEntrada = DateTime.Now,
-                            TurnoId = turno.Id
-                        };
+                //    if (turno != null)
+                //    {
+                //        turno.Validado = true;
+                //        dbContext.SaveChanges();
 
-                        dbContext.SalaEspera.Add(salaEspera);
-                        dbContext.SaveChanges();
+                //        SalaEspera salaEspera = new SalaEspera
+                //        {
+                //            HoraEntrada = DateTime.Now,
+                //            TurnoId = turno.Id
+                //        };
 
-                        int idSalaEspera = salaEspera.Id;
-                        turno.SalaEsperaId = idSalaEspera;
-                        dbContext.SaveChanges();
-                        dataGridView.Rows.RemoveAt(indiceTurno);
-                    }
-                    else
-                    {
-                        MessageBox.Show("No se pudo encontrar el turno correspondiente en la base de datos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
+                //        dbContext.SalaEspera.Add(salaEspera);
+                //        dbContext.SaveChanges();
+
+                //        int idSalaEspera = salaEspera.Id;
+                //        turno.SalaEsperaId = idSalaEspera;
+                //        dbContext.SaveChanges();
+                //        dataGridView.Rows.RemoveAt(indiceTurno);
+                //    }
+                //    else
+                //    {
+                //        MessageBox.Show("No se pudo encontrar el turno correspondiente en la base de datos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //    }
+                //}
             }
         }
+
+        public void MarcarLlegada(int turnoId)
+        {
+            var turno = dbContext.Turnos.Find(turnoId);
+            if (turno != null)
+            {
+                turno.Validado = true;
+                dbContext.SaveChanges();
+                ActualizarDataGridView();
+            }
+        }
+
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
