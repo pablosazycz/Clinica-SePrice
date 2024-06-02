@@ -37,14 +37,11 @@ namespace Clinica_SePrice
             {
                 string especialidadSeleccionada = comboBox1.SelectedItem.ToString();
                 CargarMedicosPorEspecialidad(especialidadSeleccionada);
-                if (comboBox2.SelectedItem != null)
-                {
-                    Medico medicoSeleccionado = (Medico)comboBox2.SelectedItem;
-                    DateTime proximaFechaHoraDisponible = CalcularProximoTurnoDisponible(medicoSeleccionado);
-                    dateTimePicker1.Value = proximaFechaHoraDisponible;
-                }
+          
+                comboBox2_SelectedIndexChanged(comboBox2, EventArgs.Empty);
             }
         }
+
 
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
@@ -55,7 +52,7 @@ namespace Clinica_SePrice
             {
                 MessageBox.Show("No se pueden seleccionar turnos los sábados y domingos.", "Día no válido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                // Ajusta la fecha al próximo lunes
+                
                 while (fechaSeleccionada.DayOfWeek == DayOfWeek.Saturday || fechaSeleccionada.DayOfWeek == DayOfWeek.Sunday)
                 {
                     fechaSeleccionada = fechaSeleccionada.AddDays(1);
@@ -72,6 +69,7 @@ namespace Clinica_SePrice
                 MessageBox.Show("Por favor, complete todos los campos para agendar la cita.", "Campos Incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             bool sobreturno = chkSobreturno.Checked;
             string nombrePaciente = txtNombre.Text;
             string apellidoPaciente = txtApellido.Text;
@@ -83,33 +81,33 @@ namespace Clinica_SePrice
             DateTime fechaHoraInicio = dateTimePicker1.Value;
             DateTime fechaHoraFin = fechaHoraInicio.AddMinutes(ObtenerDuracionMinimaTurno(medicoSeleccionado.Especialidad));
 
-            DateTime inicioIntervalo = new DateTime(fechaHoraInicio.Year, fechaHoraInicio.Month, fechaHoraInicio.Day, fechaHoraInicio.Hour, 0, 0);
-            DateTime finIntervalo = inicioIntervalo.AddHours(1);
-
-            var haySobreturno = dbContext.Turnos
-        .Any(t => t.MedicoId == medicoSeleccionado.Id &&
-                  t.Sobreturno &&
-                  t.Fecha >= inicioIntervalo &&
-                  t.Fecha < finIntervalo);
-
-            if (haySobreturno)
+            if (sobreturno)
             {
-                MessageBox.Show("Ya existe un sobreturno en esta hora para este médico. No se permiten más sobreturnos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                DateTime inicioIntervalo = new DateTime(fechaHoraInicio.Year, fechaHoraInicio.Month, fechaHoraInicio.Day, fechaHoraInicio.Hour, 0, 0);
+                DateTime finIntervalo = inicioIntervalo.AddHours(1);
+
+                var haySobreturno = dbContext.Turnos
+                    .Any(t => t.MedicoId == medicoSeleccionado.Id &&
+                              t.Sobreturno &&
+                              t.Fecha >= inicioIntervalo &&
+                              t.Fecha < finIntervalo);
+
+                if (haySobreturno)
+                {
+                    MessageBox.Show("Ya existe un sobreturno en esta hora para este médico. No se permiten más sobreturnos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
 
-            bool turnoProgramado = VerificarTurnoProgramado(medicoSeleccionado, fechaHoraInicio, fechaHoraFin);
+            bool turnoProgramado = VerificarTurnoProgramado(medicoSeleccionado, fechaHoraInicio, fechaHoraFin, sobreturno);
             if (turnoProgramado)
             {
                 MessageBox.Show("Ya hay un turno programado para el médico en la fecha y hora seleccionadas.", "Turno Programado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             if (fechaHoraInicio.DayOfWeek >= DayOfWeek.Monday && fechaHoraInicio.DayOfWeek <= DayOfWeek.Friday && fechaHoraInicio.Hour >= 8 && fechaHoraInicio.Hour < 18)
             {
-
-                fechaHoraInicio = fechaHoraInicio.AddTicks(-(fechaHoraInicio.Ticks % TimeSpan.TicksPerMinute));
-                fechaHoraFin = fechaHoraFin.AddTicks(-(fechaHoraFin.Ticks % TimeSpan.TicksPerMinute));
-
                 Turno nuevoTurno = new Turno
                 {
                     Fecha = fechaHoraInicio,
@@ -140,6 +138,7 @@ namespace Clinica_SePrice
         }
 
 
+
         private int ObtenerDuracionMinimaTurno(string especialidad)
         {
             switch (especialidad)
@@ -153,9 +152,11 @@ namespace Clinica_SePrice
             }
         }
 
-        private bool VerificarTurnoProgramado(Medico medicoSeleccionado, DateTime fechaHoraInicio, DateTime fechaHoraFin)
+        private bool VerificarTurnoProgramado(Medico medicoSeleccionado, DateTime fechaHoraInicio, DateTime fechaHoraFin, bool esSobreturno)
         {
-            var turnos = dbContext.Turnos.Where(t => t.Medico.Id == medicoSeleccionado.Id).ToList();
+            var turnos = dbContext.Turnos
+                .Where(t => t.Medico.Id == medicoSeleccionado.Id && !t.Validado)
+                .ToList();
 
             foreach (var turno in turnos)
             {
@@ -165,12 +166,23 @@ namespace Clinica_SePrice
 
                 if (condicion1 || condicion2 || condicion3)
                 {
-                    return true;
+                    if (esSobreturno && turno.Sobreturno)
+                    {
+                     
+                        return true;
+                    }
+                    if (!esSobreturno)
+                    {
+                       
+                        return true;
+                    }
                 }
             }
 
             return false;
         }
+
+
         private DateTime CalcularProximoTurnoDisponible(Medico medicoSeleccionado)
         {
             if (medicoSeleccionado == null)
@@ -178,34 +190,16 @@ namespace Clinica_SePrice
                 throw new ArgumentNullException(nameof(medicoSeleccionado), "El médico seleccionado es nulo.");
             }
 
-            var ultimoTurno = dbContext.Turnos
+            var turnos = dbContext.Turnos
                 .Where(t => t.Medico.Id == medicoSeleccionado.Id)
-                .OrderByDescending(t => t.Fecha)
-                .FirstOrDefault();
+                .OrderBy(t => t.Fecha)
+                .ToList();
 
-            DateTime proximaHoraDisponible;
+            DateTime inicioJornada = DateTime.Today.AddHours(8); 
+            DateTime finJornada = DateTime.Today.AddHours(18); 
+            DateTime proximaHoraDisponible = DateTime.Now;
 
-            if (ultimoTurno != null)
-            {
-                proximaHoraDisponible = ultimoTurno.Fecha.AddMinutes(ultimoTurno.Duracion);
-            }
-            else
-            {
-                proximaHoraDisponible = DateTime.Now;
-            }
-
-            // Ajustar la fecha si cae en fin de semana
-            if (proximaHoraDisponible.DayOfWeek == DayOfWeek.Saturday)
-            {
-                proximaHoraDisponible = proximaHoraDisponible.AddDays(2); // Pasar al lunes
-                proximaHoraDisponible = proximaHoraDisponible.Date.AddHours(8);
-            }
-            else if (proximaHoraDisponible.DayOfWeek == DayOfWeek.Sunday)
-            {
-                proximaHoraDisponible = proximaHoraDisponible.AddDays(1); // Pasar al lunes
-                proximaHoraDisponible = proximaHoraDisponible.Date.AddHours(8);
-            }
-            else if (proximaHoraDisponible.Hour >= 18)
+            if (proximaHoraDisponible.Hour >= 18)
             {
                 proximaHoraDisponible = proximaHoraDisponible.Date.AddDays(1).AddHours(8);
             }
@@ -214,18 +208,61 @@ namespace Clinica_SePrice
                 proximaHoraDisponible = proximaHoraDisponible.Date.AddHours(8);
             }
 
-            // Verificar que la fecha ajustada no caiga en fin de semana después de ajustar la hora
+            if (!turnos.Any())
+            {
+                return proximaHoraDisponible;
+            }
+
+            foreach (var turno in turnos)
+            {
+                if (proximaHoraDisponible < turno.Fecha && proximaHoraDisponible.AddMinutes(15) <= turno.Fecha)
+                {
+                    return proximaHoraDisponible;
+                }
+                proximaHoraDisponible = turno.Fecha.AddMinutes(turno.Duracion);
+
+                if (proximaHoraDisponible.Hour >= 18)
+                {
+                    proximaHoraDisponible = proximaHoraDisponible.Date.AddDays(1).AddHours(8);
+                }
+                else if (proximaHoraDisponible.Hour < 8)
+                {
+                    proximaHoraDisponible = proximaHoraDisponible.Date.AddHours(8);
+                }
+
+                if (proximaHoraDisponible.DayOfWeek == DayOfWeek.Saturday)
+                {
+                    proximaHoraDisponible = proximaHoraDisponible.AddDays(2).Date.AddHours(8);
+                }
+                else if (proximaHoraDisponible.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    proximaHoraDisponible = proximaHoraDisponible.AddDays(1).Date.AddHours(8);
+                }
+            }
+
+            if (proximaHoraDisponible.Hour >= 18)
+            {
+                proximaHoraDisponible = proximaHoraDisponible.Date.AddDays(1).AddHours(8);
+            }
+            else if (proximaHoraDisponible.Hour < 8)
+            {
+                proximaHoraDisponible = proximaHoraDisponible.Date.AddHours(8);
+            }
+
             if (proximaHoraDisponible.DayOfWeek == DayOfWeek.Saturday)
             {
-                proximaHoraDisponible = proximaHoraDisponible.AddDays(2); // Pasar al lunes
+                proximaHoraDisponible = proximaHoraDisponible.AddDays(2).Date.AddHours(8);
             }
             else if (proximaHoraDisponible.DayOfWeek == DayOfWeek.Sunday)
             {
-                proximaHoraDisponible = proximaHoraDisponible.AddDays(1); // Pasar al lunes
+                proximaHoraDisponible = proximaHoraDisponible.AddDays(1).Date.AddHours(8);
             }
 
             return proximaHoraDisponible;
         }
+
+
+
 
         private void ActualizarDataGridView()
         {
@@ -282,7 +319,7 @@ namespace Clinica_SePrice
                 int idTurno = Convert.ToInt32(filaSeleccionada.Cells["IdColumn"].Value);
                 turnoSeleccionadoId = idTurno;
 
-                // Si deseas cargar los datos para edición en los controles correspondientes
+              
                 DateTime fecha = Convert.ToDateTime(filaSeleccionada.Cells["FechaColumn"].Value);
                 DateTime hora = Convert.ToDateTime(filaSeleccionada.Cells["HoraColumn"].Value);
                 string lugar = Convert.ToString(filaSeleccionada.Cells["LugarColumn"].Value);
@@ -295,7 +332,7 @@ namespace Clinica_SePrice
                 fecha.Year, fecha.Month, fecha.Day,
                 hora.Hour, hora.Minute, hora.Second
                 );
-                // Asigna los valores a los controles del formulario
+               
                 dateTimePicker1.Value = fechaHora;
                 txtNombre.Text = nombrePaciente;
                 txtApellido.Text = apellidoPaciente;
@@ -355,15 +392,15 @@ namespace Clinica_SePrice
             textBox4.Clear();
             comboBox2.SelectedIndex = -1;
 
-            // Establecer la fecha del dateTimePicker al próximo día hábil si es fin de semana
+            
             DateTime fecha = DateTime.Today;
             if (fecha.DayOfWeek == DayOfWeek.Saturday)
             {
-                fecha = fecha.AddDays(2); // Mueve al próximo lunes
+                fecha = fecha.AddDays(2); 
             }
             else if (fecha.DayOfWeek == DayOfWeek.Sunday)
             {
-                fecha = fecha.AddDays(1); // Mueve al próximo lunes
+                fecha = fecha.AddDays(1); 
             }
 
             dateTimePicker1.Value = fecha;
@@ -378,7 +415,7 @@ namespace Clinica_SePrice
             }
         }
 
-   
+
         private void btnBuscarDni_Click(object sender, EventArgs e)
         {
             string dni = txtBuscarDni.Text;
