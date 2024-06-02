@@ -68,7 +68,7 @@
             txtNombre.Name = "txtNombre";
             txtNombre.ReadOnly = true;
             txtNombre.Size = new Size(100, 23);
-            txtNombre.TabIndex = 1;
+            txtNombre.TabIndex = 3;
             // 
             // txtApellido
             // 
@@ -76,7 +76,7 @@
             txtApellido.Name = "txtApellido";
             txtApellido.ReadOnly = true;
             txtApellido.Size = new Size(100, 23);
-            txtApellido.TabIndex = 3;
+            txtApellido.TabIndex = 4;
             // 
             // label2
             // 
@@ -227,7 +227,7 @@
             btnBuscarDni.Location = new Point(354, 5);
             btnBuscarDni.Name = "btnBuscarDni";
             btnBuscarDni.Size = new Size(75, 23);
-            btnBuscarDni.TabIndex = 26;
+            btnBuscarDni.TabIndex = 2;
             btnBuscarDni.Text = "Buscar";
             btnBuscarDni.UseVisualStyleBackColor = true;
             btnBuscarDni.Click += btnBuscarDni_Click;
@@ -237,7 +237,7 @@
             txtBuscarDni.Location = new Point(155, 6);
             txtBuscarDni.Name = "txtBuscarDni";
             txtBuscarDni.Size = new Size(182, 23);
-            txtBuscarDni.TabIndex = 25;
+            txtBuscarDni.TabIndex = 1;
             // 
             // label8
             // 

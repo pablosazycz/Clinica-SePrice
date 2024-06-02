@@ -221,7 +221,6 @@ namespace Clinica_SePrice
                     }
                 }
 
-                // Si la última hora disponible calculada está fuera del horario laboral, ajustar
                 while (proximaHoraDisponible.Hour >= 18 || proximaHoraDisponible.Hour < 8 || proximaHoraDisponible.DayOfWeek == DayOfWeek.Saturday || proximaHoraDisponible.DayOfWeek == DayOfWeek.Sunday)
                 {
                     if (proximaHoraDisponible.Hour >= 18)
@@ -356,7 +355,7 @@ namespace Clinica_SePrice
                 int idTurno = Convert.ToInt32(filaSeleccionada.Cells["IdColumn"].Value);
                 turnoSeleccionadoId = idTurno;
 
-                // Si deseas cargar los datos para edición en los controles correspondientes
+               
                 DateTime fecha = Convert.ToDateTime(filaSeleccionada.Cells["FechaColumn"].Value);
                 DateTime hora = Convert.ToDateTime(filaSeleccionada.Cells["HoraColumn"].Value);
                 string nombrePaciente = Convert.ToString(filaSeleccionada.Cells["NombrePacienteColumn"].Value);
@@ -367,7 +366,7 @@ namespace Clinica_SePrice
                 fecha.Year, fecha.Month, fecha.Day,
                 hora.Hour, hora.Minute, hora.Second
                 );
-                // Asigna los valores a los controles del formulario
+         
                 dateTimePicker1.Value = fechaHora;
                 txtNombre.Text = nombrePaciente;
                 txtApellido.Text = apellidoPaciente;
