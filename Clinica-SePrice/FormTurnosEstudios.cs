@@ -21,7 +21,7 @@ namespace Clinica_SePrice
             this.dbContext = dbContext;
             InitializeComponent();
             CargarEspecialidades();
-            
+
             InicializarDateTimePicker();
             if (cmbEspecialidad.SelectedItem is Especialidad selectedEspecialidad)
             {
@@ -76,7 +76,7 @@ namespace Clinica_SePrice
                 DateTime proximaFechaHoraDisponible = CalcularProximoTurnoDisponible(estudioMedicoSeleccionado);
                 dateTimePicker1.Value = proximaFechaHoraDisponible;
             }
-        }   
+        }
         private void LimpiarControles()
         {
             txtNombre.Clear();
@@ -86,7 +86,7 @@ namespace Clinica_SePrice
             cmbEstudioMedico.SelectedIndex = -1;
             cmbEspecialidad.SelectedIndex = -1;
 
-         
+
             DateTime fecha = DateTime.Today;
             if (fecha.DayOfWeek == DayOfWeek.Saturday)
             {
@@ -107,6 +107,7 @@ namespace Clinica_SePrice
                 return;
             }
 
+            bool sobreturno = chkSobreturno.Checked;
             string nombrePaciente = txtNombre.Text;
             string apellidoPaciente = txtApellido.Text;
             string dniPaciente = txtDni.Text;
@@ -117,13 +118,12 @@ namespace Clinica_SePrice
             DateTime fechaHoraFin = fechaHoraInicio.AddMinutes(ObtenerDuracionMinimaTurno(especialidadSeleccionada.ToString()));
 
             bool turnoProgramado = VerificarTurnoProgramado(especialidadSeleccionada, fechaHoraInicio, fechaHoraFin);
-            if (turnoProgramado)
+            if (turnoProgramado && !sobreturno)
             {
-                MessageBox.Show("Ya hay un turno programado para el médico en la fecha y hora seleccionadas.", "Turno Programado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Ya hay un turno programado para el estudio en la fecha y hora seleccionadas.", "Turno Programado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Verificar que la fecha y hora seleccionadas sean válidas
             if (fechaHoraInicio.DayOfWeek >= DayOfWeek.Monday && fechaHoraInicio.DayOfWeek <= DayOfWeek.Friday && fechaHoraInicio.Hour >= 8 && fechaHoraInicio.Hour < 18)
             {
                 fechaHoraInicio = fechaHoraInicio.AddTicks(-(fechaHoraInicio.Ticks % TimeSpan.TicksPerMinute));
@@ -134,6 +134,7 @@ namespace Clinica_SePrice
                     Fecha = fechaHoraInicio,
                     Estudio = estudioMedico,
                     Duracion = ObtenerDuracionMinimaTurno(especialidadSeleccionada.ToString()),
+                    Sobreturno = sobreturno,
                     Paciente = new Paciente
                     {
                         Nombre = nombrePaciente,
@@ -164,6 +165,8 @@ namespace Clinica_SePrice
                 MessageBox.Show("El horario seleccionado no es válido. Por favor, seleccione un horario entre las 8:00 y las 18:00 de lunes a viernes.", "Horario Inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
+
         private DateTime CalcularProximoTurnoDisponible(EstudioMedico estudioMedicoSeleccionado)
         {
             if (estudioMedicoSeleccionado == null)
@@ -176,11 +179,9 @@ namespace Clinica_SePrice
                 .OrderBy(t => t.Fecha)
                 .ToList();
 
-
             int duracionMinimaTurno = ObtenerDuracionMinimaTurno(estudioMedicoSeleccionado.Nombre);
 
             DateTime proximaHoraDisponible = DateTime.Now;
-
 
             if (proximaHoraDisponible.Hour < 8)
             {
@@ -190,7 +191,6 @@ namespace Clinica_SePrice
             {
                 proximaHoraDisponible = proximaHoraDisponible.AddDays(1).Date.AddHours(8);
             }
-
 
             if (proximaHoraDisponible.DayOfWeek == DayOfWeek.Saturday)
             {
@@ -203,21 +203,17 @@ namespace Clinica_SePrice
 
             if (turnos.Count != 0)
             {
-
                 for (int i = 0; i < turnos.Count; i++)
                 {
                     DateTime finTurnoActual = turnos[i].Fecha.AddMinutes(turnos[i].Duracion);
-
 
                     if (proximaHoraDisponible < turnos[i].Fecha)
                     {
                         if ((turnos[i].Fecha - proximaHoraDisponible).TotalMinutes >= duracionMinimaTurno)
                         {
-
                             break;
                         }
                     }
-
 
                     if (proximaHoraDisponible < finTurnoActual)
                     {
@@ -249,9 +245,7 @@ namespace Clinica_SePrice
             }
             else
             {
-                // Si no hay turnos registrados, la próxima hora disponible será la próxima hora clínica
                 proximaHoraDisponible = DateTime.Today.AddHours(8);
-                // Ajustar al siguiente día laborable si es necesario
                 if (proximaHoraDisponible.DayOfWeek == DayOfWeek.Saturday)
                 {
                     proximaHoraDisponible = proximaHoraDisponible.AddDays(2).Date.AddHours(8);
@@ -264,6 +258,8 @@ namespace Clinica_SePrice
 
             return proximaHoraDisponible;
         }
+
+
         private static int ObtenerDuracionMinimaTurno(String especialidad)
         {
             switch (especialidad)
@@ -284,7 +280,9 @@ namespace Clinica_SePrice
         }
         private bool VerificarTurnoProgramado(Especialidad especialidadSeleccionada, DateTime fechaHoraInicio, DateTime fechaHoraFin)
         {
-            var turnos = dbContext.Turnos.Where(t => t.Estudio.Id == especialidadSeleccionada.Id).ToList();
+            var turnos = dbContext.Turnos
+                .Where(t => t.Estudio.Id == especialidadSeleccionada.Id && !t.Sobreturno)
+                .ToList();
 
             foreach (var turno in turnos)
             {
@@ -300,6 +298,7 @@ namespace Clinica_SePrice
 
             return false;
         }
+
         private void ActualizarDataGridView()
         {
             var turnos = dbContext.Turnos

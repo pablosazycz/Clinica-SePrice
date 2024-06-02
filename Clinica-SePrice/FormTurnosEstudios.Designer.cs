@@ -49,6 +49,7 @@
             btnBuscarDni = new Button();
             txtBuscarDni = new TextBox();
             label8 = new Label();
+            chkSobreturno = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -153,7 +154,7 @@
             dateTimePicker1.Format = DateTimePickerFormat.Custom;
             dateTimePicker1.Location = new Point(72, 147);
             dateTimePicker1.Name = "dateTimePicker1";
-            dateTimePicker1.Size = new Size(304, 23);
+            dateTimePicker1.Size = new Size(194, 23);
             dateTimePicker1.TabIndex = 10;
             dateTimePicker1.ValueChanged += dateTimePicker1_ValueChanged;
             // 
@@ -247,11 +248,22 @@
             label8.TabIndex = 24;
             label8.Text = "Buscar Paciente por DNI";
             // 
+            // chkSobreturno
+            // 
+            chkSobreturno.AutoSize = true;
+            chkSobreturno.Location = new Point(302, 149);
+            chkSobreturno.Name = "chkSobreturno";
+            chkSobreturno.Size = new Size(327, 19);
+            chkSobreturno.TabIndex = 27;
+            chkSobreturno.Text = " Marcar si el estudio proviene de la guardia o internación.";
+            chkSobreturno.UseVisualStyleBackColor = true;
+            // 
             // FormTurnosEstudios
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(chkSobreturno);
             Controls.Add(btnBuscarDni);
             Controls.Add(txtBuscarDni);
             Controls.Add(label8);
@@ -303,5 +315,6 @@
         private Button btnBuscarDni;
         private TextBox txtBuscarDni;
         private Label label8;
+        private CheckBox chkSobreturno;
     }
 }
