@@ -1,4 +1,5 @@
 ﻿using Clinica_SePrice.Entidades;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,7 +30,6 @@ namespace Clinica_SePrice
 
         private void btnConfirmarPago_Click(object sender, EventArgs e)
         {
-            // Lógica para verificar el pago y registrar el pago
             string metodoPago = ObtenerMetodoPago();
 
             if (string.IsNullOrEmpty(metodoPago))
@@ -45,9 +45,26 @@ namespace Clinica_SePrice
             }
 
             RegistrarPago(metodoPago);
+
+            var turno = dbContext.Turnos.Include(t => t.Paciente).Include(t => t.Estudio).FirstOrDefault(t => t.Id == turnoId);
+            if (turno != null && turno.Estudio != null)
+            {
+                try
+                {
+                    Recibo reciboForm = new Recibo(turno);
+                    reciboForm.ShowDialog();
+                    MessageBox.Show("Recibo generado exitosamente.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
             formVerTurnos.MarcarLlegada(turnoId);
             this.Close();
         }
+
 
         private string ObtenerMetodoPago()
         {

@@ -242,7 +242,21 @@ namespace Clinica_SePrice
             txtBuscarTurnos.Text = "";
         }
 
-      
+        public void GenerarRecibo(int idTurno)
+        {
+            var turno = dbContext.Turnos.Include(t => t.Paciente).Include(t => t.Estudio).FirstOrDefault(t => t.Id == idTurno);
+
+            if (turno != null && turno.Estudio != null)
+            {
+                Recibo recibo = new Recibo(turno);
+            }
+            else
+            {
+                throw new InvalidOperationException("El recibo solo puede generarse para turnos de estudios médicos.");
+            }
+        }
+
+
 
 
     }
