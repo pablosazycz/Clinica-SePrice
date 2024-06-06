@@ -21,6 +21,8 @@ namespace Clinica_SePrice.Entidades
         public bool Validado { get; set; }
         public bool Sobreturno { get; set; } = false;      // public string Estado { get; set; }
 
+        public virtual ICollection<TransaccionInsumo> TransaccionesInsumos { get; set; }
+
         // Propiedades de las claves foráneas
         public int? MedicoId { get; set; }
         public int PacienteId { get; set; }

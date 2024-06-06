@@ -4,6 +4,7 @@ using Clinica_SePrice.Entidades;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinica_SePrice.Migrations
 {
     [DbContext(typeof(ClinicaContext))]
-    partial class ClinicaContextModelSnapshot : ModelSnapshot
+    [Migration("20240605185924_abmInsumo")]
+    partial class abmInsumo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,7 +106,12 @@ namespace Clinica_SePrice.Migrations
                     b.Property<int>("StockMaximo")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TurnoId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TurnoId");
 
                     b.ToTable("Insumos", (string)null);
                 });
@@ -208,35 +216,6 @@ namespace Clinica_SePrice.Migrations
                     b.ToTable("SalaEspera", (string)null);
                 });
 
-            modelBuilder.Entity("Clinica_SePrice.Entidades.TransaccionInsumo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CantidadUtilizada")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("InsumoId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TurnoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InsumoId");
-
-                    b.HasIndex("TurnoId");
-
-                    b.ToTable("TransaccionesInsumos", (string)null);
-                });
-
             modelBuilder.Entity("Clinica_SePrice.Entidades.Turno", b =>
                 {
                     b.Property<int>("Id")
@@ -314,6 +293,13 @@ namespace Clinica_SePrice.Migrations
                     b.Navigation("EstudioMedico");
                 });
 
+            modelBuilder.Entity("Clinica_SePrice.Entidades.Insumo", b =>
+                {
+                    b.HasOne("Clinica_SePrice.Entidades.Turno", null)
+                        .WithMany("InsumosUtilizados")
+                        .HasForeignKey("TurnoId");
+                });
+
             modelBuilder.Entity("Clinica_SePrice.Entidades.Pago", b =>
                 {
                     b.HasOne("Clinica_SePrice.Entidades.Turno", "Turno")
@@ -321,25 +307,6 @@ namespace Clinica_SePrice.Migrations
                         .HasForeignKey("TurnoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Turno");
-                });
-
-            modelBuilder.Entity("Clinica_SePrice.Entidades.TransaccionInsumo", b =>
-                {
-                    b.HasOne("Clinica_SePrice.Entidades.Insumo", "Insumo")
-                        .WithMany()
-                        .HasForeignKey("InsumoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Clinica_SePrice.Entidades.Turno", "Turno")
-                        .WithMany("TransaccionesInsumos")
-                        .HasForeignKey("TurnoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Insumo");
 
                     b.Navigation("Turno");
                 });
@@ -402,7 +369,7 @@ namespace Clinica_SePrice.Migrations
 
             modelBuilder.Entity("Clinica_SePrice.Entidades.Turno", b =>
                 {
-                    b.Navigation("TransaccionesInsumos");
+                    b.Navigation("InsumosUtilizados");
                 });
 #pragma warning restore 612, 618
         }

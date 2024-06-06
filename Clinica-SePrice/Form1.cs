@@ -82,5 +82,10 @@ namespace Clinica_SePrice
             }
         }
 
+        private void button5_Click(object sender, EventArgs e)
+        {
+            AbmInsumos formInsumos = new AbmInsumos(dbContext);
+            formInsumos.Show();
+        }
     }
 }
