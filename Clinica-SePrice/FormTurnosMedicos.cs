@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Windows.Forms;
 
 namespace Clinica_SePrice
@@ -106,6 +107,13 @@ namespace Clinica_SePrice
                 return;
             }
 
+            Paciente pacienteExistente = dbContext.Pacientes.FirstOrDefault(p => p.Dni == txtDni.Text);
+            if (pacienteExistente == null)
+            {
+                MessageBox.Show("No se encontró el paciente en la base de datos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             if (fechaHoraInicio.DayOfWeek >= DayOfWeek.Monday && fechaHoraInicio.DayOfWeek <= DayOfWeek.Friday && fechaHoraInicio.Hour >= 8 && fechaHoraInicio.Hour < 18)
             {
                 Turno nuevoTurno = new Turno
@@ -116,13 +124,7 @@ namespace Clinica_SePrice
                     Duracion = ObtenerDuracionMinimaTurno(medicoSeleccionado.Especialidad),
                     EstudioMedicoId = null,
                     Sobreturno = sobreturno,
-                    Paciente = new Paciente
-                    {
-                        Nombre = nombrePaciente,
-                        Apellido = apellidoPaciente,
-                        Dni = dniPaciente,
-                        EnSalaEspera = false
-                    }
+                    Paciente = pacienteExistente
                 };
 
                 dbContext.Turnos.Add(nuevoTurno);
@@ -260,9 +262,6 @@ namespace Clinica_SePrice
 
             return proximaHoraDisponible;
         }
-
-
-
 
         private void ActualizarDataGridView()
         {

@@ -37,6 +37,7 @@ namespace Clinica_SePrice
             contenidoRecibo.AppendLine($"Paciente: {turno.Paciente.Nombre} {turno.Paciente.Apellido}");
             contenidoRecibo.AppendLine($"DNI: {turno.Paciente.Dni}");
             contenidoRecibo.AppendLine($"Estudio médico: {turno.Estudio.Nombre}");
+            contenidoRecibo.AppendLine($"Precio: ${turno.Estudio.Precio.ToString("F2")}");
             contenidoRecibo.AppendLine($"Fecha del turno: {turno.Fecha.ToShortDateString()}");
             contenidoRecibo.AppendLine($"Hora del turno: {turno.Fecha.ToShortTimeString()}");
             contenidoRecibo.AppendLine("________________________________________");

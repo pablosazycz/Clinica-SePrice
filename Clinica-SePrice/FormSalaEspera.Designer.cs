@@ -30,6 +30,7 @@
         {
             dataGridView1 = new DataGridView();
             LblTitulo = new Label();
+            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -55,11 +56,22 @@
             LblTitulo.TabIndex = 1;
             LblTitulo.Text = "LLAMADOR DE SALA DE ESPERA\r\n";
             // 
+            // button1
+            // 
+            button1.Location = new Point(39, 10);
+            button1.Name = "button1";
+            button1.Size = new Size(68, 50);
+            button1.TabIndex = 2;
+            button1.Text = "Actualizar";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // FormSalaEspera
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(button1);
             Controls.Add(LblTitulo);
             Controls.Add(dataGridView1);
             Name = "FormSalaEspera";
@@ -73,5 +85,6 @@
 
         private DataGridView dataGridView1;
         private Label LblTitulo;
+        private Button button1;
     }
 }

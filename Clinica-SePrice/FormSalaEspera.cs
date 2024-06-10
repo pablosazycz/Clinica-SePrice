@@ -26,9 +26,9 @@ namespace Clinica_SePrice
         private void ActualizarDataGridView()
         {
             var turnosValidadosEnSalaEspera = dbContext.SalaEspera
-     .Include(se => se.Turno.Paciente)  // Asegúrate de incluir los datos del paciente
-     .Where(se => se.Turno.Validado)    // Filtra los turnos validados
-     .ToList();
+       .Include(se => se.Turno.Paciente)
+       .Where(se => se.Turno.Validado && se.HoraLlamado == null)
+       .ToList();
 
             dataGridView1.Columns.Clear();
             dataGridView1.Columns.Add("IdColumn", "ID");
@@ -64,7 +64,7 @@ namespace Clinica_SePrice
                 }
                 else
                 {
-                    // Si el turno es null, agregar valores predeterminados o manejar de otra manera
+
                     dataGridView1.Rows.Add(
                         salaEspera.Id,
                         salaEspera.HoraEntrada.ToShortTimeString(),
@@ -79,7 +79,6 @@ namespace Clinica_SePrice
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-
             if (e.RowIndex >= 0 && e.ColumnIndex == dataGridView1.Columns["Llamar Paciente"].Index)
             {
 
@@ -89,19 +88,26 @@ namespace Clinica_SePrice
                 DialogResult dialogResult = MessageBox.Show("¿Llamar al paciente?", "Llamar Paciente", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
                 {
-                    MessageBox.Show("Paciente llamado", "Llamado", MessageBoxButtons.OK);
-
-
+                    var salaEspera = dbContext.SalaEspera.FirstOrDefault(se => se.Id == idSalaEspera);
+                    if (salaEspera != null)
+                    {
+                        salaEspera.HoraLlamado = DateTime.Now;
+                        dbContext.SaveChanges();
+                        dataGridView1.Rows.RemoveAt(indiceTurno);
+                        MessageBox.Show("Paciente llamado", "Llamado", MessageBoxButtons.OK);
+                    }
+                    else
+                    {
+                        MessageBox.Show("No se encontró el registro de la sala de espera.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
-                else if (dialogResult == DialogResult.No)
-                {
-
-                }
-
-
-
 
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ActualizarDataGridView();
         }
     }
 }

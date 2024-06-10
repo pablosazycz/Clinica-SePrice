@@ -41,6 +41,8 @@
             rbObraSocial = new RadioButton();
             label3 = new Label();
             radioButton1 = new RadioButton();
+            label4 = new Label();
+            label5 = new Label();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             panel1.SuspendLayout();
@@ -69,7 +71,8 @@
             // 
             // groupBox2
             // 
-            groupBox2.Controls.Add(panel1);
+            groupBox2.Controls.Add(label5);
+            groupBox2.Controls.Add(label4);
             groupBox2.Controls.Add(txtNombreObraSocial);
             groupBox2.Controls.Add(label2);
             groupBox2.Controls.Add(txtNumeroObraSocial);
@@ -77,6 +80,7 @@
             groupBox2.Controls.Add(rbObraSocial);
             groupBox2.Controls.Add(label3);
             groupBox2.Controls.Add(radioButton1);
+            groupBox2.Controls.Add(panel1);
             groupBox2.Location = new Point(6, 22);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(269, 358);
@@ -87,7 +91,7 @@
             // 
             panel1.Controls.Add(rbTarjeta);
             panel1.Controls.Add(rbEfectivo);
-            panel1.Location = new Point(11, 39);
+            panel1.Location = new Point(11, 88);
             panel1.Name = "panel1";
             panel1.Size = new Size(127, 53);
             panel1.TabIndex = 10;
@@ -95,7 +99,7 @@
             // rbTarjeta
             // 
             rbTarjeta.AutoSize = true;
-            rbTarjeta.Location = new Point(20, 33);
+            rbTarjeta.Location = new Point(16, 28);
             rbTarjeta.Name = "rbTarjeta";
             rbTarjeta.Size = new Size(59, 19);
             rbTarjeta.TabIndex = 2;
@@ -107,7 +111,7 @@
             // rbEfectivo
             // 
             rbEfectivo.AutoSize = true;
-            rbEfectivo.Location = new Point(20, 8);
+            rbEfectivo.Location = new Point(16, 3);
             rbEfectivo.Name = "rbEfectivo";
             rbEfectivo.Size = new Size(67, 19);
             rbEfectivo.TabIndex = 1;
@@ -161,7 +165,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(27, 104);
+            label3.Location = new Point(27, 150);
             label3.Name = "label3";
             label3.Size = new Size(232, 30);
             label3.TabIndex = 3;
@@ -170,13 +174,31 @@
             // radioButton1
             // 
             radioButton1.AutoSize = true;
-            radioButton1.Location = new Point(6, 22);
+            radioButton1.Location = new Point(11, 63);
             radioButton1.Name = "radioButton1";
             radioButton1.Size = new Size(75, 19);
             radioButton1.TabIndex = 0;
             radioButton1.TabStop = true;
             radioButton1.Text = "Particular";
             radioButton1.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(11, 32);
+            label4.Name = "label4";
+            label4.Size = new Size(46, 15);
+            label4.TabIndex = 11;
+            label4.Text = "Precio :";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(80, 32);
+            label5.Name = "label5";
+            label5.Size = new Size(38, 15);
+            label5.TabIndex = 12;
+            label5.Text = "label5";
             // 
             // FormPago
             // 
@@ -209,5 +231,7 @@
         private Label label1;
         private RadioButton rbObraSocial;
         private Panel panel1;
+        private Label label5;
+        private Label label4;
     }
 }

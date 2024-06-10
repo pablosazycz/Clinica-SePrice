@@ -1,4 +1,5 @@
 ﻿using Clinica_SePrice.Entidades;
+using Clinica_SePrice.Migrations;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,8 @@ namespace Clinica_SePrice
             this.dbContext = dbContext;
             InitializeComponent();
             label3.Visible = false;
+            EstudioMedico estudio = dbContext.Turnos.Include(t => t.Estudio).FirstOrDefault(t => t.Id == turnoId).Estudio;
+            label5.Text = '$' + estudio.Precio.ToString("F2");
         }
 
         private void btnConfirmarPago_Click(object sender, EventArgs e)
@@ -44,25 +47,30 @@ namespace Clinica_SePrice
                 return;
             }
 
-            RegistrarPago(metodoPago);
-
-            var turno = dbContext.Turnos.Include(t => t.Paciente).Include(t => t.Estudio).FirstOrDefault(t => t.Id == turnoId);
-            if (turno != null && turno.Estudio != null)
+            try
             {
-                try
+                RegistrarPago(metodoPago);
+
+                var turno = dbContext.Turnos.Include(t => t.Paciente).Include(t => t.Estudio).FirstOrDefault(t => t.Id == turnoId);
+                if (turno != null && turno.Estudio != null)
                 {
                     Recibo reciboForm = new Recibo(turno);
                     reciboForm.ShowDialog();
                     MessageBox.Show("Recibo generado exitosamente.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-                catch (InvalidOperationException ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
 
-            formVerTurnos.MarcarLlegada(turnoId);
-            this.Close();
+                formVerTurnos.MarcarLlegada(turnoId);
+                this.DialogResult = DialogResult.OK;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al registrar el pago: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.DialogResult = DialogResult.Cancel;
+            }
+            finally
+            {
+                this.Close();
+            }
         }
 
 
