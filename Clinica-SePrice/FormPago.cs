@@ -28,7 +28,14 @@ namespace Clinica_SePrice
             InitializeComponent();
             label3.Visible = false;
             EstudioMedico estudio = dbContext.Turnos.Include(t => t.Estudio).FirstOrDefault(t => t.Id == turnoId).Estudio;
-            label5.Text = '$' + estudio.Precio.ToString("F2");
+            if (estudio != null && estudio.Precio != null)
+            {
+                label5.Text = '$' + estudio.Precio.Value.ToString("F2");
+            }
+            else
+            {
+                label5.Text = "Precio no disponible";
+            }
         }
 
         private void btnConfirmarPago_Click(object sender, EventArgs e)
