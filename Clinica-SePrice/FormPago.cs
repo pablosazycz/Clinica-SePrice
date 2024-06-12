@@ -30,7 +30,7 @@ namespace Clinica_SePrice
             EstudioMedico estudio = dbContext.Turnos.Include(t => t.Estudio).FirstOrDefault(t => t.Id == turnoId).Estudio;
             if (estudio != null && estudio.Precio != null)
             {
-                label5.Text = '$' + estudio.Precio.Value.ToString("F2");
+                label5.Text = '$' + estudio.Precio.ToString("F2");
             }
             else
             {
